@@ -1,44 +1,80 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 
 const FriendSpace = () => {
+  // Create an array with 8 friends data
+  const friends = [
+    {
+      name: "Tom",
+      imgSrc: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7",
+      verified: true
+    },
+    {
+      name: "Haneda",
+      imgSrc: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
+      verified: true
+    },
+    {
+      name: "Liam",
+      imgSrc: "https://images.unsplash.com/photo-1518770660439-4636190af475",
+      verified: true
+    },
+    {
+      name: "Roche",
+      imgSrc: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
+      verified: true
+    },
+    {
+      name: "Cattan",
+      imgSrc: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
+      verified: true
+    },
+    {
+      name: "Dee",
+      imgSrc: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
+      verified: true
+    },
+    {
+      name: "Sammie",
+      imgSrc: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e",
+      verified: true
+    },
+    {
+      name: "Mark",
+      imgSrc: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5",
+      verified: true
+    }
+  ];
+
   return (
     <div className="mb-4">
       <div className="spacehey-section-header flex justify-between items-center mb-1">
         <div>Jonny's Top 8</div>
-        <Link to="/friends" className="text-xs text-blue-700 hover:underline">[view all]</Link>
       </div>
       
       <div className="px-2 py-1">
         <p className="mb-2">Jonny has <span className="text-red-600 font-bold">8</span> friends.</p>
         
-        <div className="flex gap-6">
-          <div className="text-center">
-            <div className="bg-primary p-2 w-24 h-24 flex items-center justify-center mb-1">
-              <div className="bg-white text-primary rounded-full w-12 h-12 flex items-center justify-center">
-                <span className="text-lg font-bold">hey</span>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {friends.map((friend, index) => (
+            <div key={index} className="text-center">
+              <div className="bg-blue-100 p-2 w-16 sm:w-20 md:w-24 h-16 sm:h-20 md:h-24 flex items-center justify-center mb-1 mx-auto">
+                <img 
+                  src={friend.imgSrc} 
+                  alt={`${friend.name}'s profile`}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex items-center justify-center gap-1">
+                <span>{friend.name}</span>
+                {friend.verified && (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
               </div>
             </div>
-            <div className="flex items-center justify-center gap-1">
-              <span>SpaceHey</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-          </div>
-          
-          <div className="text-center">
-            <div className="bg-blue-100 p-2 w-24 h-24 flex items-center justify-center mb-1">
-              <div className="text-3xl font-bold">An</div>
-            </div>
-            <div className="flex items-center justify-center gap-1">
-              <span>An</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </div>
