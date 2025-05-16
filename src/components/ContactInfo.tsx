@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 const ContactInfo = () => {
   return (
     <div className="spacehey-panel w-full">
-      <div className="spacehey-panel-header">Contacting Selena</div>
+      <div className="spacehey-panel-header">Links</div>
       <div className="p-2 space-y-2">
         <div className="flex items-center gap-1">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
