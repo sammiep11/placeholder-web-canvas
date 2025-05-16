@@ -63,7 +63,7 @@ const FriendComments = () => {
   return (
     <div className="mb-4">
       <div className="spacehey-section-header flex justify-between items-center mb-1">
-        <div>*~Jonny~*'s Wall</div>
+        <div>Jonny's Wall</div>
         <Link to="#" onClick={(e) => {
           e.preventDefault();
           setIsCommentDialogOpen(true);
