@@ -16,7 +16,7 @@ const Profile = () => {
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
-        <div className="text-3xl font-bold">Jonny</div>
+        <div className="text-3xl font-bold">*~Jonny~*</div>
         <Button 
           onClick={() => setIsRsvpDialogOpen(true)}
           className="bg-pink-500 hover:bg-pink-600 text-white font-bold"
