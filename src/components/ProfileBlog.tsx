@@ -6,11 +6,10 @@ const ProfileBlog = () => {
   return (
     <div className="mb-4">
       <div className="flex justify-between items-center">
-        <div className="text-lg font-bold">Selena's Latest Blog Entries</div>
-        <Link to="/blog" className="text-blue-700 hover:underline">[View Blog]</Link>
+        <div className="text-lg font-bold">You're invited to Jonny's 40th Birthday</div>
       </div>
       <div className="italic py-3">
-        There are no Blog Entries yet.
+        Get ready to party
       </div>
     </div>
   );
