@@ -49,7 +49,7 @@ const FriendComments = () => {
   return (
     <div className="mb-4 border border-gray-300 rounded">
       <div className="bg-gradient-to-b from-blue-100 to-blue-200 p-2 font-bold border-b border-gray-300">
-        Jonny's Friends Comments
+        *~Jonny~*'s Wall
       </div>
       
       <div className="px-4 py-2">
