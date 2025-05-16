@@ -285,7 +285,10 @@ const Admin = () => {
                                 ? 'bg-red-100 text-red-800' 
                                 : 'bg-yellow-100 text-yellow-800'
                           }`}>
-                            {rsvp.attendance.charAt(0).toUpperCase() + rsvp.attendance.slice(1)}
+                            {/* Add null check before accessing charAt method */}
+                            {rsvp.attendance && typeof rsvp.attendance === 'string' 
+                              ? rsvp.attendance.charAt(0).toUpperCase() + rsvp.attendance.slice(1)
+                              : 'Unknown'}
                           </span>
                         </TableCell>
                         <TableCell>{rsvp.guests}</TableCell>
