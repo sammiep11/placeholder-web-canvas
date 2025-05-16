@@ -3,12 +3,12 @@ import React from 'react';
 
 const Interests = () => {
   const interests = [
-    { category: "General", answer: "Vintage tech, indie games, 90s pop culture, and collecting vinyl records" },
-    { category: "Music", answer: "The Cure, Depeche Mode, New Order, Joy Division, The Smiths" },
-    { category: "Movies", answer: "Blade Runner, The Breakfast Club, Ferris Bueller's Day Off, Back to the Future" },
-    { category: "Television", answer: "Twin Peaks, Stranger Things, X-Files, Friends, Seinfeld" },
-    { category: "Books", answer: "Neuromancer, Snow Crash, Ready Player One, Hitchhiker's Guide to the Galaxy" },
-    { category: "Heroes", answer: "Steve Jobs, Tim Berners-Lee, Ada Lovelace, Alan Turing" }
+    { category: "General", answer: "kdfldnflvndlns;ljp ojwpkjf;" },
+    { category: "Music", answer: "dfklvdnvld  lwndf wm fwm" },
+    { category: "Movies", answer: "ldsnlvslls ld" },
+    { category: "Television", answer: "kefglnvld sdklsn  lsjndflsn3 i23ro" },
+    { category: "Books", answer: "skdmvlf nlwjefwnl" },
+    { category: "Heroes", answer: "ls;dkn;ck 9kdjlsnl" }
   ];
 
   return (
