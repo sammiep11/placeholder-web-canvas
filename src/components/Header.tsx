@@ -20,21 +20,14 @@ const Header = () => {
       <div className="spacehey-header flex justify-between items-center">
         <div className="flex items-center gap-2">
           <div className="flex items-center">
-            {/* MySpace logo - person icon + text */}
-            <div className="flex items-center">
-              {/* Person icon */}
-              <div className="mr-2 relative w-8 h-8">
-                <div className="w-4 h-4 bg-white rounded-full absolute top-0 left-0"></div>
-                <div className="w-7 h-7 bg-white absolute bottom-0 left-0 rounded-tl-full rounded-tr-full"></div>
-              </div>
-              
-              {/* myspace text */}
-              <div>
-                <span className="text-2xl font-bold tracking-wide text-white">myspace</span>
-                <span className="text-xs align-top text-white">®</span>
-                <div className="text-xs text-white mt-[-2px]">a place for friends</div>
-              </div>
-            </div>
+            {/* MySpace logo */}
+            <Link to="/" className="flex items-center">
+              <img 
+                src="/lovable-uploads/7d39b3e2-18e5-45e3-bb2b-7bd99b167fb2.png" 
+                alt="MySpace Logo" 
+                className="h-9 mr-1" 
+              />
+            </Link>
           </div>
         </div>
         
