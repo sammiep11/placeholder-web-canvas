@@ -6,12 +6,12 @@ const FriendSpace = () => {
   return (
     <div className="mb-4">
       <div className="spacehey-section-header flex justify-between items-center mb-1">
-        <div>Selena's Friend Space</div>
+        <div>Jonny's Top 8</div>
         <Link to="/friends" className="text-xs text-blue-700 hover:underline">[view all]</Link>
       </div>
       
       <div className="px-2 py-1">
-        <p className="mb-2">Selena has <span className="text-red-600 font-bold">2</span> friends.</p>
+        <p className="mb-2">Jonny has <span className="text-red-600 font-bold">8</span> friends.</p>
         
         <div className="flex gap-6">
           <div className="text-center">
