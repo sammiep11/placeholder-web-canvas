@@ -19,7 +19,7 @@ const Search = () => {
             <h2 className="text-xl font-bold mb-3">Sorry, you have no friends</h2>
             
             <p className="text-gray-600 mb-6">
-              Maybe you should try adding some people to your Top 8!
+              Don't be so desperate to search for people on fake websites
             </p>
             
             <div className="spacehey-table w-full max-w-xs mb-4">
