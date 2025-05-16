@@ -1,8 +1,18 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, FormEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Header = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+
+  const handleSearch = (e: FormEvent) => {
+    e.preventDefault();
+    // Redirect to search page regardless of the search query
+    navigate('/search');
+    setSearchQuery(''); // Clear the search input after searching
+  };
+
   return (
     <header>
       <div className="spacehey-header flex justify-between items-center">
@@ -26,14 +36,21 @@ const Header = () => {
           </div>
         </div>
         
-        <div className="flex items-center gap-2">
+        <form onSubmit={handleSearch} className="flex items-center gap-2">
           <span className="text-white">Search Users:</span>
           <input 
             type="text" 
             className="border border-gray-300 px-2 py-1 rounded text-black"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <button className="bg-gray-200 text-black px-2 py-1 rounded">Search</button>
-        </div>
+          <button 
+            type="submit"
+            className="bg-gray-200 text-black px-2 py-1 rounded hover:bg-gray-300 transition-colors"
+          >
+            Search
+          </button>
+        </form>
         
         <div className="flex gap-2">
           <Link to="/" className="text-white hover:underline">Help</Link>
