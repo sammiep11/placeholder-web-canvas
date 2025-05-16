@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { MessageSquare } from 'lucide-react';
 import RsvpDialog from './RsvpDialog';
 import CommentDialog from './CommentDialog';
+import { useIsMobile } from '@/hooks/use-is-mobile';
 
 type Comment = {
   id: string;
@@ -19,6 +20,7 @@ const FriendComments = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [isRsvpDialogOpen, setIsRsvpDialogOpen] = useState(false);
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
+  const isMobile = useIsMobile();
   
   // Load comments from localStorage whenever component mounts
   useEffect(() => {
@@ -76,19 +78,19 @@ const FriendComments = () => {
         </p>
 
         {comments.length > 0 ? (
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             {comments.map((comment) => (
               <div key={comment.id} className="border border-gray-300 rounded p-2">
                 <div className="flex items-start gap-2">
                   <div className="flex-shrink-0">
-                    <div className="w-8 h-8 bg-blue-100 flex items-center justify-center rounded">
-                      <MessageSquare size={16} className="text-blue-500" />
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-100 flex items-center justify-center rounded">
+                      <MessageSquare size={isMobile ? 12 : 16} className="text-blue-500" />
                     </div>
                   </div>
                   <div className="flex-grow">
                     <div>
-                      <span className="font-bold text-blue-700">{comment.name}</span>
-                      <span className="text-gray-500"> ({comment.aimScreenName})</span>
+                      <span className="font-bold text-blue-700 text-sm sm:text-base">{comment.name}</span>
+                      <span className="text-gray-500 text-xs sm:text-sm"> ({comment.aimScreenName})</span>
                       {comment.type === 'rsvp' && (
                         <span className="text-xs bg-pink-100 text-pink-700 rounded px-1 ml-1">RSVP</span>
                       )}
@@ -100,7 +102,7 @@ const FriendComments = () => {
                         year: 'numeric'
                       })}
                     </div>
-                    <div className="text-sm">{comment.comment}</div>
+                    <div className="text-xs sm:text-sm break-words">{comment.comment}</div>
                   </div>
                 </div>
               </div>
@@ -115,7 +117,7 @@ const FriendComments = () => {
         <div className="mt-3">
           <Button 
             onClick={() => setIsRsvpDialogOpen(true)}
-            className="w-full bg-pink-500 hover:bg-pink-600"
+            className="w-full bg-pink-500 hover:bg-pink-600 text-sm sm:text-base py-2 h-auto touch-manipulation"
           >
             RSVP to Jonny's Party
           </Button>

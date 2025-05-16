@@ -9,23 +9,25 @@ import ProfileUrl from '../components/ProfileUrl';
 import Interests from '../components/Interests';
 import RsvpDialog from '../components/RsvpDialog';
 import { Button } from '../components/ui/button';
+import { useIsMobile } from '@/hooks/use-is-mobile';
 
 const Profile = () => {
   const [isRsvpDialogOpen, setIsRsvpDialogOpen] = useState(false);
+  const isMobile = useIsMobile();
   
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <div className="text-3xl font-bold">*~Jonny~*</div>
+    <div className="p-2 md:p-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
+        <div className="text-2xl sm:text-3xl font-bold">*~Jonny~*</div>
         <Button 
           onClick={() => setIsRsvpDialogOpen(true)}
-          className="bg-pink-500 hover:bg-pink-600 text-white font-bold"
+          className="bg-pink-500 hover:bg-pink-600 text-white font-bold w-full sm:w-auto"
         >
           RSVP to Jonny's Party!
         </Button>
       </div>
       
-      <div className="flex flex-col md:flex-row gap-6">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-6">
         {/* Left column */}
         <div className="w-full md:w-1/3">
           <div className="text-green-600 font-bold mb-2">
@@ -39,7 +41,7 @@ const Profile = () => {
             <img 
               src="https://i.pinimg.com/originals/b9/3a/dd/b93add1dcab640d74af459979c8f7a93.jpg" 
               alt="Retro virtual pet"
-              className="w-32 h-32 object-contain mx-auto border border-gray-300 p-1"
+              className="w-24 h-24 sm:w-32 sm:h-32 object-contain mx-auto border border-gray-300 p-1"
             />
           </div>
           

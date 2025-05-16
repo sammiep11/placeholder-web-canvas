@@ -47,12 +47,13 @@
     padding: 0;
     font-family: Verdana, Arial, Helvetica, sans-serif;
     font-size: 12px;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
 /* Custom classes for the SpaceHey style */
 .spacehey-header {
-  @apply bg-primary text-white py-3 px-4;
+  @apply bg-primary text-white py-2 sm:py-3 px-3 sm:px-4;
 }
 
 .spacehey-secondary-nav {
@@ -82,4 +83,34 @@
 
 .spacehey-table tr td:first-child {
   @apply bg-blue-100 font-bold;
+}
+
+/* Mobile-friendly utility classes */
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Better tap targets for mobile */
+@media (max-width: 768px) {
+  button, 
+  a[role="button"], 
+  .clickable, 
+  input[type="button"], 
+  input[type="submit"] {
+    @apply min-h-[44px] min-w-[44px];
+  }
+}
+
+/* Add back-to-top button */
+.back-to-top {
+  @apply fixed bottom-4 right-4 bg-primary text-white rounded-full p-2 shadow-lg z-50;
 }

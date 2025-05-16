@@ -7,6 +7,7 @@ import { Album, Photo } from "@/pages/Photos";
 import { Download } from "lucide-react";
 import PhotoView from "./PhotoView";
 import { getPhotos } from "@/utils/photoUtils";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 
 interface PhotoAlbumProps {
   album: Album;
@@ -15,6 +16,7 @@ interface PhotoAlbumProps {
 const PhotoAlbum = ({ album }: PhotoAlbumProps) => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const fetchedPhotos = getPhotos(album);
@@ -36,7 +38,7 @@ const PhotoAlbum = ({ album }: PhotoAlbumProps) => {
 
   if (photos.length === 0) {
     return (
-      <div className="text-center p-10">
+      <div className="text-center p-4 sm:p-10 text-sm sm:text-base">
         {album === "throwbacks" && (
           <p>No throwback photos yet. Be the first to add one!</p>
         )}
@@ -52,34 +54,35 @@ const PhotoAlbum = ({ album }: PhotoAlbumProps) => {
 
   return (
     <div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
         {photos.map((photo) => (
-          <Card key={photo.id} className="overflow-hidden">
+          <Card key={photo.id} className="overflow-hidden touch-manipulation">
             <div className="cursor-pointer" onClick={() => handlePhotoClick(photo)}>
               <AspectRatio ratio={4/3}>
                 <img
                   src={photo.src}
                   alt={photo.caption || "Photo"}
                   className="object-cover w-full h-full"
+                  loading="lazy"
                 />
               </AspectRatio>
             </div>
-            <div className="p-3">
-              {photo.caption && <p className="text-sm mb-1">{photo.caption}</p>}
+            <div className="p-2 sm:p-3">
+              {photo.caption && <p className="text-xs sm:text-sm mb-1">{photo.caption}</p>}
               <p className="text-xs text-muted-foreground">
                 Shared by: {photo.uploadedBy}
               </p>
               {album === "party" && (
                 <Button 
                   variant="outline" 
-                  size="sm" 
-                  className="mt-2 w-full flex items-center gap-2"
+                  size={isMobile ? "sm" : "default"}
+                  className="mt-2 w-full flex items-center gap-1 text-xs sm:text-sm py-1 h-auto"
                   onClick={(e) => {
                     e.stopPropagation();
                     downloadPhoto(photo);
                   }}
                 >
-                  <Download size={14} />
+                  <Download size={isMobile ? 12 : 14} />
                   Download
                 </Button>
               )}
