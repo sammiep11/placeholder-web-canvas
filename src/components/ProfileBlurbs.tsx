@@ -13,6 +13,9 @@ const ProfileBlurbs = () => {
         
         <h3 className="font-bold text-red-600">Where:</h3>
         <p>Casa de Jonny & Haneda <br></br>869 Berryessa Ave, Milpitas</p>
+
+        <h3 className="font-bold text-red-600">Theme:</h3>
+        <p>2000s - let's party like Jonny is still young!<br></br>Wear your Y2K best</p>
       </div>
     </div>
   );
