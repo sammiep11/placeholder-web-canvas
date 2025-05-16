@@ -1,4 +1,3 @@
-
 import { useToast } from "@/hooks/use-toast";
 
 // Types for SMS functionality
@@ -175,9 +174,16 @@ export const sendTextBlast = async (
 // Extract phone numbers from RSVPs
 export const getPhoneNumbersFromRsvps = (onlyAttending: boolean = false): string[] => {
   try {
-    const allRsvps = JSON.parse(localStorage.getItem('rsvps') || '[]');
+    const storageData = localStorage.getItem('rsvps');
+    if (!storageData) return [];
     
-    const filteredRsvps = allRsvps.filter((rsvp: any) => {
+    const allRsvps = JSON.parse(storageData) as Array<{
+      type: string;
+      phone?: string;
+      attendance?: string;
+    }>;
+    
+    const filteredRsvps = allRsvps.filter((rsvp) => {
       // Only get entries with type 'rsvp' and phone numbers
       if (rsvp.type !== 'rsvp' || !rsvp.phone) return false;
       
@@ -190,7 +196,7 @@ export const getPhoneNumbersFromRsvps = (onlyAttending: boolean = false): string
     });
     
     // Extract unique phone numbers
-    const phoneNumbers = filteredRsvps.map((rsvp: any) => rsvp.phone);
+    const phoneNumbers = filteredRsvps.map((rsvp) => rsvp.phone as string);
     return [...new Set(phoneNumbers)]; // Remove duplicates
   } catch (error) {
     console.error('Error getting phone numbers:', error);
