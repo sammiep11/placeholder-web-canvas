@@ -5,8 +5,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import Header from '@/components/Header';
-import { ArrowUpDown, Lock } from 'lucide-react';
+import { ArrowUpDown, Lock, TrashIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 type RsvpEntry = {
   id: string;
@@ -27,6 +38,8 @@ const Admin = () => {
   const [sortField, setSortField] = useState<keyof RsvpEntry>('date');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [filterAttendance, setFilterAttendance] = useState<'all' | 'yes' | 'no' | 'maybe'>('all');
+  const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
+  const [currentTab, setCurrentTab] = useState<'rsvps' | 'comments'>('rsvps');
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -89,6 +102,31 @@ const Admin = () => {
     }
   };
 
+  const handleDeleteComment = (id: string) => {
+    // Find the entry
+    const updatedRsvps = rsvps.map(entry => {
+      if (entry.id === id) {
+        // If it's a standalone comment, don't include it at all
+        if (entry.type === 'comment') {
+          return null;
+        }
+        // If it's an RSVP with a comment, just remove the comment
+        return { ...entry, comment: '' };
+      }
+      return entry;
+    }).filter(entry => entry !== null) as RsvpEntry[];
+    
+    // Update localStorage and state
+    localStorage.setItem('rsvps', JSON.stringify(updatedRsvps));
+    setRsvps(updatedRsvps);
+    setCommentToDelete(null);
+    
+    toast({
+      title: 'Comment deleted',
+      description: 'The comment has been removed',
+    });
+  };
+
   const filteredRsvps = useMemo(() => {
     return rsvps
       .filter(rsvp => filterAttendance === 'all' || rsvp.attendance === filterAttendance)
@@ -111,6 +149,16 @@ const Admin = () => {
         return 0;
       });
   }, [rsvps, sortField, sortDirection, filterAttendance]);
+
+  // All comments (both from RSVPs and standalone)
+  const comments = useMemo(() => {
+    return rsvps
+      .filter(entry => 
+        (entry.comment && entry.comment.trim() !== '') || 
+        entry.type === 'comment'
+      )
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [rsvps]);
 
   // Calculate statistics
   const stats = useMemo(() => {
@@ -208,116 +256,219 @@ const Admin = () => {
               </table>
             </div>
             
-            <div className="mb-4">
-              <label className="block mb-2">Filter by attendance:</label>
+            {/* Tab Navigation */}
+            <div className="border-b mb-4">
               <div className="flex space-x-2">
-                <Button 
-                  variant={filterAttendance === 'all' ? 'default' : 'outline'}
-                  onClick={() => setFilterAttendance('all')}
-                  size="sm"
+                <button 
+                  className={`py-2 px-4 font-medium ${currentTab === 'rsvps' 
+                    ? 'border-b-2 border-primary text-primary' 
+                    : 'text-gray-500 hover:text-gray-700'}`}
+                  onClick={() => setCurrentTab('rsvps')}
                 >
-                  All
-                </Button>
-                <Button 
-                  variant={filterAttendance === 'yes' ? 'default' : 'outline'}
-                  onClick={() => setFilterAttendance('yes')}
-                  size="sm"
+                  RSVPs
+                </button>
+                <button 
+                  className={`py-2 px-4 font-medium ${currentTab === 'comments' 
+                    ? 'border-b-2 border-primary text-primary' 
+                    : 'text-gray-500 hover:text-gray-700'}`}
+                  onClick={() => setCurrentTab('comments')}
                 >
-                  Going
-                </Button>
-                <Button 
-                  variant={filterAttendance === 'no' ? 'default' : 'outline'}
-                  onClick={() => setFilterAttendance('no')}
-                  size="sm"
-                >
-                  Not Going
-                </Button>
-                <Button 
-                  variant={filterAttendance === 'maybe' ? 'default' : 'outline'}
-                  onClick={() => setFilterAttendance('maybe')}
-                  size="sm"
-                >
-                  Maybe
-                </Button>
+                  Comments ({comments.length})
+                </button>
               </div>
             </div>
             
-            <div className="rounded-md border overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead 
-                      className="cursor-pointer hover:bg-gray-100" 
-                      onClick={() => handleSort('name')}
+            {currentTab === 'rsvps' && (
+              <>
+                <div className="mb-4">
+                  <label className="block mb-2">Filter by attendance:</label>
+                  <div className="flex space-x-2">
+                    <Button 
+                      variant={filterAttendance === 'all' ? 'default' : 'outline'}
+                      onClick={() => setFilterAttendance('all')}
+                      size="sm"
                     >
-                      Name <ArrowUpDown className="ml-1 h-4 w-4 inline" />
-                    </TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>AIM Screen Name</TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:bg-gray-100" 
-                      onClick={() => handleSort('attendance')}
+                      All
+                    </Button>
+                    <Button 
+                      variant={filterAttendance === 'yes' ? 'default' : 'outline'}
+                      onClick={() => setFilterAttendance('yes')}
+                      size="sm"
                     >
-                      Attendance <ArrowUpDown className="ml-1 h-4 w-4 inline" />
-                    </TableHead>
-                    <TableHead>Guests</TableHead>
-                    <TableHead>Comment</TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:bg-gray-100" 
-                      onClick={() => handleSort('date')}
+                      Going
+                    </Button>
+                    <Button 
+                      variant={filterAttendance === 'no' ? 'default' : 'outline'}
+                      onClick={() => setFilterAttendance('no')}
+                      size="sm"
                     >
-                      Date <ArrowUpDown className="ml-1 h-4 w-4 inline" />
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredRsvps.length > 0 ? (
-                    filteredRsvps.map((rsvp) => (
-                      <TableRow key={rsvp.id}>
-                        <TableCell className="font-medium">{rsvp.name}</TableCell>
-                        <TableCell>{rsvp.phone}</TableCell>
-                        <TableCell>{rsvp.aimScreenName}</TableCell>
-                        <TableCell>
-                          <span className={`px-2 py-1 rounded text-xs ${
-                            rsvp.attendance === 'yes' 
-                              ? 'bg-green-100 text-green-800' 
-                              : rsvp.attendance === 'no' 
-                                ? 'bg-red-100 text-red-800' 
-                                : 'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {/* Add null check before accessing charAt method */}
-                            {rsvp.attendance && typeof rsvp.attendance === 'string' 
-                              ? rsvp.attendance.charAt(0).toUpperCase() + rsvp.attendance.slice(1)
-                              : 'Unknown'}
-                          </span>
-                        </TableCell>
-                        <TableCell>{rsvp.guests}</TableCell>
-                        <TableCell>
-                          {rsvp.comment ? (
-                            <div className="max-w-xs truncate">{rsvp.comment}</div>
-                          ) : (
-                            <span className="text-gray-400">No comment</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {new Date(rsvp.date).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric'
-                          })}
-                        </TableCell>
+                      Not Going
+                    </Button>
+                    <Button 
+                      variant={filterAttendance === 'maybe' ? 'default' : 'outline'}
+                      onClick={() => setFilterAttendance('maybe')}
+                      size="sm"
+                    >
+                      Maybe
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="rounded-md border overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead 
+                          className="cursor-pointer hover:bg-gray-100" 
+                          onClick={() => handleSort('name')}
+                        >
+                          Name <ArrowUpDown className="ml-1 h-4 w-4 inline" />
+                        </TableHead>
+                        <TableHead>Phone</TableHead>
+                        <TableHead>AIM Screen Name</TableHead>
+                        <TableHead 
+                          className="cursor-pointer hover:bg-gray-100" 
+                          onClick={() => handleSort('attendance')}
+                        >
+                          Attendance <ArrowUpDown className="ml-1 h-4 w-4 inline" />
+                        </TableHead>
+                        <TableHead>Guests</TableHead>
+                        <TableHead>Comment</TableHead>
+                        <TableHead 
+                          className="cursor-pointer hover:bg-gray-100" 
+                          onClick={() => handleSort('date')}
+                        >
+                          Date <ArrowUpDown className="ml-1 h-4 w-4 inline" />
+                        </TableHead>
                       </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={7} className="text-center py-4">
-                        No RSVPs found
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredRsvps.length > 0 ? (
+                        filteredRsvps.map((rsvp) => (
+                          <TableRow key={rsvp.id}>
+                            <TableCell className="font-medium">{rsvp.name}</TableCell>
+                            <TableCell>{rsvp.phone}</TableCell>
+                            <TableCell>{rsvp.aimScreenName}</TableCell>
+                            <TableCell>
+                              <span className={`px-2 py-1 rounded text-xs ${
+                                rsvp.attendance === 'yes' 
+                                  ? 'bg-green-100 text-green-800' 
+                                  : rsvp.attendance === 'no' 
+                                    ? 'bg-red-100 text-red-800' 
+                                    : 'bg-yellow-100 text-yellow-800'
+                              }`}>
+                                {/* Add null check before accessing charAt method */}
+                                {rsvp.attendance && typeof rsvp.attendance === 'string' 
+                                  ? rsvp.attendance.charAt(0).toUpperCase() + rsvp.attendance.slice(1)
+                                  : 'Unknown'}
+                              </span>
+                            </TableCell>
+                            <TableCell>{rsvp.guests}</TableCell>
+                            <TableCell>
+                              {rsvp.comment ? (
+                                <div className="max-w-xs truncate">{rsvp.comment}</div>
+                              ) : (
+                                <span className="text-gray-400">No comment</span>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {new Date(rsvp.date).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric'
+                              })}
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={7} className="text-center py-4">
+                            No RSVPs found
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </>
+            )}
+
+            {currentTab === 'comments' && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">All Comments</h3>
+                
+                {comments.length > 0 ? (
+                  <div className="space-y-3">
+                    {comments.map((item) => (
+                      <div key={item.id} className="border rounded-md p-4 bg-white">
+                        <div className="flex justify-between">
+                          <div className="flex flex-col mb-2">
+                            <div>
+                              <span className="font-bold">{item.name}</span>
+                              <span className="text-sm text-gray-500"> ({item.aimScreenName})</span>
+                              {item.type === 'comment' ? (
+                                <span className="ml-2 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                                  Wall Comment
+                                </span>
+                              ) : (
+                                <span className="ml-2 text-xs bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full">
+                                  RSVP Comment
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-xs text-gray-500">
+                              {new Date(item.date).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </span>
+                          </div>
+                          
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="icon" className="text-red-500">
+                                <TrashIcon size={18} />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Comment</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to delete this comment? 
+                                  {item.type === 'comment'
+                                    ? " This will permanently remove the entire comment."
+                                    : " This will remove only the comment part while keeping the RSVP information."}
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction 
+                                  onClick={() => handleDeleteComment(item.id)}
+                                  className="bg-red-600 hover:bg-red-700 text-white"
+                                >
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                        
+                        <p className="text-sm whitespace-pre-wrap border-t pt-2">
+                          {item.comment}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 bg-gray-50 border rounded-md">
+                    <p className="text-gray-500">No comments found</p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
