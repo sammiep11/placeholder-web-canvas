@@ -11,7 +11,7 @@ import Interests from '../components/Interests';
 const Profile = () => {
   return (
     <div className="p-4">
-      <div className="text-3xl font-bold mb-4">Selena</div>
+      <div className="text-3xl font-bold mb-4">Jonny</div>
       
       <div className="flex gap-6">
         {/* Left column */}
