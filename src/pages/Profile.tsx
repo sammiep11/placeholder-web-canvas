@@ -10,6 +10,7 @@ import Interests from '../components/Interests';
 import RsvpDialog from '../components/RsvpDialog';
 import { Button } from '../components/ui/button';
 import { useIsMobile } from '@/hooks/use-is-mobile';
+import { Avatar, AvatarImage, AvatarFallback } from '../components/ui/avatar';
 
 const Profile = () => {
   const [isRsvpDialogOpen, setIsRsvpDialogOpen] = useState(false);
@@ -37,12 +38,15 @@ const Profile = () => {
             ONLINE!
           </div>
           
-          <div className="mb-6">
-            <img 
-              src="https://i.pinimg.com/originals/b9/3a/dd/b93add1dcab640d74af459979c8f7a93.jpg" 
-              alt="Retro virtual pet"
-              className="w-24 h-24 sm:w-32 sm:h-32 object-contain mx-auto border border-gray-300 p-1"
-            />
+          <div className="mb-6 flex justify-center">
+            <Avatar className="w-32 h-32 border border-gray-300">
+              <AvatarImage 
+                src="/profile-pic.jpeg" 
+                alt="Profile Picture"
+                className="object-cover"
+              />
+              <AvatarFallback className="text-2xl">J</AvatarFallback>
+            </Avatar>
           </div>
           
           <div className="mb-6">
