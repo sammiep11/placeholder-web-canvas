@@ -60,7 +60,8 @@
 }
 
 .spacehey-section-header {
-  @apply bg-amber-200 text-red-600 font-bold py-1 px-2 border border-amber-300;
+  background-color: #F9C56D;
+  @apply text-red-600 font-bold py-1 px-2 border border-amber-300;
 }
 
 .spacehey-panel {
