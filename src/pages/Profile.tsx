@@ -41,7 +41,7 @@ const Profile = () => {
           <div className="mb-6 flex justify-center">
             <Avatar className="w-32 h-32 border border-gray-300">
               <AvatarImage 
-                src="/profile-pic.jpeg" 
+                src="https://i.pinimg.com/originals/b9/3a/dd/b93add1dcab640d74af459979c8f7a93.jpg" 
                 alt="Profile Picture"
                 className="object-cover"
               />
