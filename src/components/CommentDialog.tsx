@@ -10,6 +10,7 @@ import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { notifyAdmins } from '@/utils/smsUtils';
+import { supabase } from '@/integrations/supabase/client';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -41,18 +42,15 @@ const CommentDialog = ({ open, onOpenChange }: CommentDialogProps) => {
     setIsSubmitting(true);
     
     try {
-      // Get existing comments from localStorage or initialize empty array
-      const existingRsvps = JSON.parse(localStorage.getItem('rsvps') || '[]');
+      // Create a new comment in Supabase
+      const { error } = await supabase.from('rsvps_comments').insert({
+        name: data.name,
+        aim_screen_name: data.aimScreenName,
+        comment: data.comment,
+        type: 'comment'
+      });
       
-      // Add new comment with timestamp
-      const newComment = {
-        ...data,
-        date: new Date().toISOString(),
-        id: Date.now().toString(),
-        type: 'comment', // To distinguish from RSVPs
-      };
-      
-      localStorage.setItem('rsvps', JSON.stringify([...existingRsvps, newComment]));
+      if (error) throw error;
       
       // Send notification to admins
       await notifyAdmins('comment', `${data.name}: ${data.comment.substring(0, 30)}${data.comment.length > 30 ? '...' : ''}`);

@@ -6,13 +6,14 @@ import { MessageSquare } from 'lucide-react';
 import RsvpDialog from './RsvpDialog';
 import CommentDialog from './CommentDialog';
 import { useIsMobile } from '@/hooks/use-is-mobile';
+import { supabase } from '@/integrations/supabase/client';
 
 type Comment = {
   id: string;
   name: string;
-  aimScreenName: string;
+  aim_screen_name: string;
   comment: string;
-  date: string;
+  created_at: string;
   type: 'rsvp' | 'comment';
 };
 
@@ -20,46 +21,60 @@ const FriendComments = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [isRsvpDialogOpen, setIsRsvpDialogOpen] = useState(false);
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const isMobile = useIsMobile();
   
-  // Load comments from localStorage whenever component mounts
+  // Load comments from Supabase when component mounts
   useEffect(() => {
-    const loadComments = () => {
+    const fetchComments = async () => {
+      setIsLoading(true);
       try {
-        const rsvps = JSON.parse(localStorage.getItem('rsvps') || '[]');
-        // Filter items that have comments
-        const allComments = rsvps
-          .filter((item: any) => 
-            // Include RSVP comments and standalone comments
-            (item.type === 'rsvp' && item.comment && item.comment.trim() !== '') || 
-            item.type === 'comment'
-          )
-          .map((item: any) => ({
-            id: item.id,
-            name: item.name,
-            aimScreenName: item.aimScreenName,
-            comment: item.comment,
-            date: item.date,
-            type: item.type || 'rsvp', // Default to 'rsvp' for backward compatibility
-          }));
+        // Fetch both standalone comments and RSVP comments that have content
+        const { data, error } = await supabase
+          .from('rsvps_comments')
+          .select('*')
+          .or('type.eq.comment,and(type.eq.rsvp,comment.neq.null,comment.neq."")')
+          .order('created_at', { ascending: false });
         
-        // Sort comments by date (newest first)
-        allComments.sort((a: Comment, b: Comment) => 
-          new Date(b.date).getTime() - new Date(a.date).getTime()
-        );
+        if (error) throw error;
         
-        setComments(allComments);
+        // Transform the data to match the Comment type
+        const transformedComments = data.map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          aim_screen_name: item.aim_screen_name,
+          comment: item.comment,
+          created_at: item.created_at,
+          type: item.type
+        }));
+        
+        setComments(transformedComments);
       } catch (error) {
         console.error('Error loading comments:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    loadComments();
-    // Set up an interval to check for new comments
-    const intervalId = setInterval(loadComments, 10000);
+    fetchComments();
     
-    // Clean up interval on unmount
-    return () => clearInterval(intervalId);
+    // Set up Supabase real-time subscription to listen for changes
+    const channel = supabase
+      .channel('public:rsvps_comments')
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'rsvps_comments' 
+      }, () => {
+        // When changes happen, fetch the latest data
+        fetchComments();
+      })
+      .subscribe();
+    
+    // Clean up subscription on component unmount
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   return (
@@ -77,7 +92,9 @@ const FriendComments = () => {
           Displaying <span className="text-red-600 font-bold">{comments.length}</span> of <span className="text-red-600 font-bold">{comments.length}</span> comments
         </p>
 
-        {comments.length > 0 ? (
+        {isLoading ? (
+          <div className="text-center py-3">Loading comments...</div>
+        ) : comments.length > 0 ? (
           <div className="space-y-2 sm:space-y-3">
             {comments.map((comment) => (
               <div key={comment.id} className="border border-gray-300 rounded p-2">
@@ -90,13 +107,13 @@ const FriendComments = () => {
                   <div className="flex-grow">
                     <div>
                       <span className="font-bold text-blue-700 text-sm sm:text-base">{comment.name}</span>
-                      <span className="text-gray-500 text-xs sm:text-sm"> ({comment.aimScreenName})</span>
+                      <span className="text-gray-500 text-xs sm:text-sm"> ({comment.aim_screen_name})</span>
                       {comment.type === 'rsvp' && (
                         <span className="text-xs bg-pink-100 text-pink-700 rounded px-1 ml-1">RSVP</span>
                       )}
                     </div>
                     <div className="text-xs text-gray-500 mb-1">
-                      {new Date(comment.date).toLocaleDateString('en-US', {
+                      {new Date(comment.created_at).toLocaleDateString('en-US', {
                         month: 'short',
                         day: 'numeric',
                         year: 'numeric'
