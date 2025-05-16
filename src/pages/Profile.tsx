@@ -39,7 +39,7 @@ const Profile = () => {
           </div>
           
           <div className="mb-6 flex justify-center">
-            <Avatar className="w-45 h-45 border border-gray-300 overflow-hidden">
+            <Avatar className="w-40 h-40 border border-gray-300 overflow-hidden">
               <AvatarImage 
                 src="/profile-pic.jpeg" 
                 alt="Profile Picture"
