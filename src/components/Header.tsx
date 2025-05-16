@@ -72,6 +72,8 @@ const Header = () => {
         <span>|</span>
         <Link to="/search" className="hover:underline">Search</Link>
         <span>|</span>
+        <Link to="/photos" className="hover:underline">Photos</Link>
+        <span>|</span>
         <Link to="/messages" className="hover:underline">Messages</Link>
         <span>|</span>
         <Link to="/blog" className="hover:underline">Blog</Link>

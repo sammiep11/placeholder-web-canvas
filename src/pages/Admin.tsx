@@ -1,474 +1,232 @@
-
-import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import Header from '@/components/Header';
-import { ArrowUpDown, Lock, TrashIcon } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-
-type RsvpEntry = {
-  id: string;
-  name: string;
-  phone: string;
-  aimScreenName: string;
-  attendance: 'yes' | 'no' | 'maybe';
-  guests: string;
-  comment?: string;
-  date: string;
-  type: 'rsvp' | 'comment';
-};
+import React, { useState, useEffect } from "react";
+import Header from "../components/Header";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { getPhotos, deletePhoto } from "@/utils/photoUtils";
 
 const Admin = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [password, setPassword] = useState('');
-  const [rsvps, setRsvps] = useState<RsvpEntry[]>([]);
-  const [sortField, setSortField] = useState<keyof RsvpEntry>('date');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
-  const [filterAttendance, setFilterAttendance] = useState<'all' | 'yes' | 'no' | 'maybe'>('all');
-  const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
-  const [currentTab, setCurrentTab] = useState<'rsvps' | 'comments'>('rsvps');
-  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("rsvps");
+  const [rsvps, setRsvps] = useState<any[]>([]);
+  const [comments, setComments] = useState<any[]>([]);
+  const [photos, setPhotos] = useState<any[]>([]);
   const { toast } = useToast();
-  
-  // Check if user is already authenticated
+
   useEffect(() => {
-    const authStatus = localStorage.getItem('adminAuthenticated');
-    if (authStatus === 'true') {
-      setIsAuthenticated(true);
+    // Load RSVPs
+    const storedRsvps = localStorage.getItem("rsvps");
+    if (storedRsvps) {
+      setRsvps(JSON.parse(storedRsvps));
     }
-  }, []);
 
-  // Load RSVPs from localStorage
-  useEffect(() => {
-    if (isAuthenticated) {
-      try {
-        const storedRsvps = JSON.parse(localStorage.getItem('rsvps') || '[]');
-        setRsvps(storedRsvps);
-      } catch (error) {
-        console.error('Error loading RSVPs:', error);
-        toast({
-          title: 'Error',
-          description: 'Failed to load RSVPs from storage',
-          variant: 'destructive',
-        });
-      }
+    // Load comments
+    const storedComments = localStorage.getItem("comments");
+    if (storedComments) {
+      setComments(JSON.parse(storedComments));
     }
-  }, [isAuthenticated, toast]);
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password === 'SaMmIe&&hAnEdA') {
-      setIsAuthenticated(true);
-      localStorage.setItem('adminAuthenticated', 'true');
-      toast({
-        title: 'Success',
-        description: 'Welcome to the admin panel',
-      });
-    } else {
-      toast({
-        title: 'Access Denied',
-        description: 'Invalid password',
-        variant: 'destructive',
-      });
-      setPassword('');
+    if (activeTab === "photos") {
+      // Load photos
+      const allPhotos = getPhotos();
+      setPhotos(allPhotos);
     }
-  };
+  }, [activeTab]);
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    localStorage.removeItem('adminAuthenticated');
-    navigate('/');
-  };
-
-  const handleSort = (field: keyof RsvpEntry) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('asc');
-    }
-  };
-
-  const handleDeleteComment = (id: string) => {
-    // Find the entry
-    const updatedRsvps = rsvps.map(entry => {
-      if (entry.id === id) {
-        // If it's a standalone comment, don't include it at all
-        if (entry.type === 'comment') {
-          return null;
-        }
-        // If it's an RSVP with a comment, just remove the comment
-        return { ...entry, comment: '' };
-      }
-      return entry;
-    }).filter(entry => entry !== null) as RsvpEntry[];
-    
-    // Update localStorage and state
-    localStorage.setItem('rsvps', JSON.stringify(updatedRsvps));
+  const handleDeleteRsvp = (email: string) => {
+    const updatedRsvps = rsvps.filter((rsvp) => rsvp.email !== email);
+    localStorage.setItem("rsvps", JSON.stringify(updatedRsvps));
     setRsvps(updatedRsvps);
-    setCommentToDelete(null);
-    
     toast({
-      title: 'Comment deleted',
-      description: 'The comment has been removed',
+      title: "RSVP deleted",
+      description: "The RSVP has been removed."
     });
   };
 
-  const filteredRsvps = useMemo(() => {
-    return rsvps
-      .filter(rsvp => filterAttendance === 'all' || rsvp.attendance === filterAttendance)
-      .sort((a, b) => {
-        let valueA = a[sortField];
-        let valueB = b[sortField];
-        
-        if (sortField === 'date') {
-          return sortDirection === 'asc' 
-            ? new Date(valueA).getTime() - new Date(valueB).getTime()
-            : new Date(valueB).getTime() - new Date(valueA).getTime();
-        }
-        
-        if (typeof valueA === 'string' && typeof valueB === 'string') {
-          return sortDirection === 'asc'
-            ? valueA.localeCompare(valueB)
-            : valueB.localeCompare(valueA);
-        }
-        
-        return 0;
-      });
-  }, [rsvps, sortField, sortDirection, filterAttendance]);
+  const handleDeleteComment = (id: string) => {
+    const updatedComments = comments.filter((comment) => comment.id !== id);
+    localStorage.setItem("comments", JSON.stringify(updatedComments));
+    setComments(updatedComments);
+    toast({
+      title: "Comment deleted",
+      description: "The comment has been removed."
+    });
+  };
 
-  // All comments (both from RSVPs and standalone)
-  const comments = useMemo(() => {
-    return rsvps
-      .filter(entry => 
-        (entry.comment && entry.comment.trim() !== '') || 
-        entry.type === 'comment'
-      )
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, [rsvps]);
-
-  // Calculate statistics
-  const stats = useMemo(() => {
-    const yesResponses = rsvps.filter(r => r.attendance === 'yes').length;
-    const noResponses = rsvps.filter(r => r.attendance === 'no').length;
-    const maybeResponses = rsvps.filter(r => r.attendance === 'maybe').length;
-    
-    const expectedGuests = rsvps
-      .filter(r => r.attendance === 'yes' || r.attendance === 'maybe')
-      .reduce((sum, r) => sum + (parseInt(r.guests) || 0), 0);
-      
-    return {
-      yes: yesResponses,
-      no: noResponses,
-      maybe: maybeResponses,
-      total: rsvps.length,
-      expectedGuests,
-    };
-  }, [rsvps]);
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        
-        <div className="flex-1 flex flex-col items-center justify-center p-4">
-          <div className="spacehey-panel max-w-md w-full">
-            <div className="spacehey-panel-header">Admin Access</div>
-            
-            <div className="p-8">
-              <div className="flex justify-center mb-4">
-                <Lock size={40} className="text-red-600" />
-              </div>
-              
-              <h2 className="text-xl font-bold mb-3 text-center">Restricted Area</h2>
-              
-              <form onSubmit={handlePasswordSubmit}>
-                <div className="mb-4">
-                  <label htmlFor="password" className="block mb-1">Password</label>
-                  <Input 
-                    id="password"
-                    type="password" 
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full" 
-                    autoComplete="off"
-                  />
-                </div>
-                
-                <Button type="submit" className="w-full">Access Admin Panel</Button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const handleDeletePhoto = (photoId: string) => {
+    deletePhoto(photoId);
+    // Refresh the photos list
+    setPhotos(getPhotos());
+    toast({
+      title: "Photo deleted",
+      description: "The photo has been removed."
+    });
+  };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen bg-white">
       <Header />
-      
-      <div className="flex-1 p-4">
-        <div className="spacehey-panel mb-4">
-          <div className="spacehey-panel-header flex justify-between items-center">
-            <div>RSVP Admin Panel</div>
-            <Button variant="destructive" size="sm" onClick={handleLogout}>Log Out</Button>
-          </div>
-          
-          <div className="p-4">
-            <div className="spacehey-table mb-5">
-              <table className="w-full">
-                <tbody>
-                  <tr>
-                    <td>Total RSVPs:</td>
-                    <td>{stats.total}</td>
-                  </tr>
-                  <tr>
-                    <td>Going:</td>
-                    <td>{stats.yes}</td>
-                  </tr>
-                  <tr>
-                    <td>Not Going:</td>
-                    <td>{stats.no}</td>
-                  </tr>
-                  <tr>
-                    <td>Maybe:</td>
-                    <td>{stats.maybe}</td>
-                  </tr>
-                  <tr>
-                    <td>Expected Guests:</td>
-                    <td>{stats.expectedGuests}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            
-            {/* Tab Navigation */}
-            <div className="border-b mb-4">
-              <div className="flex space-x-2">
-                <button 
-                  className={`py-2 px-4 font-medium ${currentTab === 'rsvps' 
-                    ? 'border-b-2 border-primary text-primary' 
-                    : 'text-gray-500 hover:text-gray-700'}`}
-                  onClick={() => setCurrentTab('rsvps')}
-                >
-                  RSVPs
-                </button>
-                <button 
-                  className={`py-2 px-4 font-medium ${currentTab === 'comments' 
-                    ? 'border-b-2 border-primary text-primary' 
-                    : 'text-gray-500 hover:text-gray-700'}`}
-                  onClick={() => setCurrentTab('comments')}
-                >
-                  Comments ({comments.length})
-                </button>
-              </div>
-            </div>
-            
-            {currentTab === 'rsvps' && (
-              <>
-                <div className="mb-4">
-                  <label className="block mb-2">Filter by attendance:</label>
-                  <div className="flex space-x-2">
-                    <Button 
-                      variant={filterAttendance === 'all' ? 'default' : 'outline'}
-                      onClick={() => setFilterAttendance('all')}
-                      size="sm"
-                    >
-                      All
-                    </Button>
-                    <Button 
-                      variant={filterAttendance === 'yes' ? 'default' : 'outline'}
-                      onClick={() => setFilterAttendance('yes')}
-                      size="sm"
-                    >
-                      Going
-                    </Button>
-                    <Button 
-                      variant={filterAttendance === 'no' ? 'default' : 'outline'}
-                      onClick={() => setFilterAttendance('no')}
-                      size="sm"
-                    >
-                      Not Going
-                    </Button>
-                    <Button 
-                      variant={filterAttendance === 'maybe' ? 'default' : 'outline'}
-                      onClick={() => setFilterAttendance('maybe')}
-                      size="sm"
-                    >
-                      Maybe
-                    </Button>
-                  </div>
-                </div>
-                
-                <div className="rounded-md border overflow-hidden">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead 
-                          className="cursor-pointer hover:bg-gray-100" 
-                          onClick={() => handleSort('name')}
-                        >
-                          Name <ArrowUpDown className="ml-1 h-4 w-4 inline" />
-                        </TableHead>
-                        <TableHead>Phone</TableHead>
-                        <TableHead>AIM Screen Name</TableHead>
-                        <TableHead 
-                          className="cursor-pointer hover:bg-gray-100" 
-                          onClick={() => handleSort('attendance')}
-                        >
-                          Attendance <ArrowUpDown className="ml-1 h-4 w-4 inline" />
-                        </TableHead>
-                        <TableHead>Guests</TableHead>
-                        <TableHead>Comment</TableHead>
-                        <TableHead 
-                          className="cursor-pointer hover:bg-gray-100" 
-                          onClick={() => handleSort('date')}
-                        >
-                          Date <ArrowUpDown className="ml-1 h-4 w-4 inline" />
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredRsvps.length > 0 ? (
-                        filteredRsvps.map((rsvp) => (
-                          <TableRow key={rsvp.id}>
-                            <TableCell className="font-medium">{rsvp.name}</TableCell>
-                            <TableCell>{rsvp.phone}</TableCell>
-                            <TableCell>{rsvp.aimScreenName}</TableCell>
-                            <TableCell>
-                              <span className={`px-2 py-1 rounded text-xs ${
-                                rsvp.attendance === 'yes' 
-                                  ? 'bg-green-100 text-green-800' 
-                                  : rsvp.attendance === 'no' 
-                                    ? 'bg-red-100 text-red-800' 
-                                    : 'bg-yellow-100 text-yellow-800'
-                              }`}>
-                                {/* Add null check before accessing charAt method */}
-                                {rsvp.attendance && typeof rsvp.attendance === 'string' 
-                                  ? rsvp.attendance.charAt(0).toUpperCase() + rsvp.attendance.slice(1)
-                                  : 'Unknown'}
-                              </span>
-                            </TableCell>
-                            <TableCell>{rsvp.guests}</TableCell>
-                            <TableCell>
-                              {rsvp.comment ? (
-                                <div className="max-w-xs truncate">{rsvp.comment}</div>
-                              ) : (
-                                <span className="text-gray-400">No comment</span>
-                              )}
-                            </TableCell>
-                            <TableCell>
-                              {new Date(rsvp.date).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                year: 'numeric'
-                              })}
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      ) : (
-                        <TableRow>
-                          <TableCell colSpan={7} className="text-center py-4">
-                            No RSVPs found
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-              </>
-            )}
 
-            {currentTab === 'comments' && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">All Comments</h3>
-                
-                {comments.length > 0 ? (
-                  <div className="space-y-3">
-                    {comments.map((item) => (
-                      <div key={item.id} className="border rounded-md p-4 bg-white">
-                        <div className="flex justify-between">
-                          <div className="flex flex-col mb-2">
-                            <div>
-                              <span className="font-bold">{item.name}</span>
-                              <span className="text-sm text-gray-500"> ({item.aimScreenName})</span>
-                              {item.type === 'comment' ? (
-                                <span className="ml-2 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-                                  Wall Comment
-                                </span>
-                              ) : (
-                                <span className="ml-2 text-xs bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full">
-                                  RSVP Comment
-                                </span>
-                              )}
-                            </div>
-                            <span className="text-xs text-gray-500">
-                              {new Date(item.date).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                year: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })}
-                            </span>
-                          </div>
-                          
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="ghost" size="icon" className="text-red-500">
-                                <TrashIcon size={18} />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Delete Comment</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Are you sure you want to delete this comment? 
-                                  {item.type === 'comment'
-                                    ? " This will permanently remove the entire comment."
-                                    : " This will remove only the comment part while keeping the RSVP information."}
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction 
-                                  onClick={() => handleDeleteComment(item.id)}
-                                  className="bg-red-600 hover:bg-red-700 text-white"
+      <div className="container max-w-4xl mx-auto px-4 py-8">
+        <div className="spacehey-panel mb-6">
+          <div className="spacehey-panel-header">
+            <h1>Admin Panel</h1>
+          </div>
+          <div className="p-4">
+            <p className="mb-4">
+              Manage RSVPs, comments, and other site content here.
+            </p>
+
+            <Tabs defaultValue="rsvps" onValueChange={(value) => setActiveTab(value)}>
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="rsvps">RSVPs</TabsTrigger>
+                <TabsTrigger value="comments">Comments</TabsTrigger>
+                <TabsTrigger value="photos">Photos</TabsTrigger>
+              </TabsList>
+              <TabsContent value="rsvps">
+                <div className="space-y-4">
+                  <h2 className="text-xl font-bold">Manage RSVPs</h2>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200 spacehey-table">
+                      <thead>
+                        <tr className="bg-gray-100">
+                          <th className="px-4 py-2 text-left">Name</th>
+                          <th className="px-4 py-2 text-left">Email</th>
+                          <th className="px-4 py-2 text-left">Attending</th>
+                          <th className="px-4 py-2 text-left">Guests</th>
+                          <th className="px-4 py-2 text-left">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        {rsvps.length === 0 ? (
+                          <tr>
+                            <td colSpan={5} className="px-4 py-2 text-center">
+                              No RSVPs yet
+                            </td>
+                          </tr>
+                        ) : (
+                          rsvps.map((rsvp) => (
+                            <tr key={rsvp.email}>
+                              <td className="px-4 py-2">{rsvp.name}</td>
+                              <td className="px-4 py-2">{rsvp.email}</td>
+                              <td className="px-4 py-2">{rsvp.attending ? "Yes" : "No"}</td>
+                              <td className="px-4 py-2">{rsvp.guests}</td>
+                              <td className="px-4 py-2">
+                                <Button
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => handleDeleteRsvp(rsvp.email)}
                                 >
                                   Delete
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                        
-                        <p className="text-sm whitespace-pre-wrap border-t pt-2">
-                          {item.comment}
-                        </p>
-                      </div>
-                    ))}
+                                </Button>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
                   </div>
-                ) : (
-                  <div className="text-center py-8 bg-gray-50 border rounded-md">
-                    <p className="text-gray-500">No comments found</p>
+                </div>
+              </TabsContent>
+              <TabsContent value="comments">
+                <div className="space-y-4">
+                  <h2 className="text-xl font-bold">Manage Comments</h2>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200 spacehey-table">
+                      <thead>
+                        <tr className="bg-gray-100">
+                          <th className="px-4 py-2 text-left">Name</th>
+                          <th className="px-4 py-2 text-left">Comment</th>
+                          <th className="px-4 py-2 text-left">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        {comments.length === 0 ? (
+                          <tr>
+                            <td colSpan={3} className="px-4 py-2 text-center">
+                              No comments yet
+                            </td>
+                          </tr>
+                        ) : (
+                          comments.map((comment) => (
+                            <tr key={comment.id}>
+                              <td className="px-4 py-2">{comment.name}</td>
+                              <td className="px-4 py-2">{comment.comment}</td>
+                              <td className="px-4 py-2">
+                                <Button
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => handleDeleteComment(comment.id)}
+                                >
+                                  Delete
+                                </Button>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
                   </div>
-                )}
-              </div>
-            )}
+                </div>
+              </TabsContent>
+              <TabsContent value="photos">
+                <div className="space-y-4">
+                  <h2 className="text-xl font-bold">Manage Photos</h2>
+                  
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200 spacehey-table">
+                      <thead>
+                        <tr className="bg-gray-100">
+                          <th className="px-4 py-2 text-left">Preview</th>
+                          <th className="px-4 py-2 text-left">Album</th>
+                          <th className="px-4 py-2 text-left">Caption</th>
+                          <th className="px-4 py-2 text-left">Uploaded By</th>
+                          <th className="px-4 py-2 text-left">Date</th>
+                          <th className="px-4 py-2 text-left">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        {photos.length === 0 ? (
+                          <tr>
+                            <td colSpan={6} className="px-4 py-2 text-center">
+                              No photos found
+                            </td>
+                          </tr>
+                        ) : (
+                          photos.map((photo) => (
+                            <tr key={photo.id}>
+                              <td className="px-4 py-2">
+                                <img 
+                                  src={photo.src} 
+                                  alt={photo.caption || "Photo"} 
+                                  className="h-16 w-16 object-cover"
+                                />
+                              </td>
+                              <td className="px-4 py-2 capitalize">{photo.album}</td>
+                              <td className="px-4 py-2">{photo.caption || "-"}</td>
+                              <td className="px-4 py-2">{photo.uploadedBy}</td>
+                              <td className="px-4 py-2">
+                                {new Date(photo.date).toLocaleDateString()}
+                              </td>
+                              <td className="px-4 py-2">
+                                <Button 
+                                  variant="destructive" 
+                                  size="sm"
+                                  onClick={() => handleDeletePhoto(photo.id)}
+                                >
+                                  Delete
+                                </Button>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
       </div>
