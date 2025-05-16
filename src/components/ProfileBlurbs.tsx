@@ -5,7 +5,7 @@ const ProfileBlurbs = () => {
   return (
     <div className="mb-4">
       <div className="spacehey-section-header mb-1">
-        Selena's Blurbs
+        You're invited to Jonny's 40th Birthday Party
       </div>
       <div className="px-2 py-1">
         <h3 className="font-bold text-red-600">About me:</h3>
