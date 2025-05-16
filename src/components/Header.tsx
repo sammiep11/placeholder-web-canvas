@@ -7,29 +7,27 @@ const Header = () => {
     <header>
       <div className="spacehey-header flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <div className="bg-transparent text-white rounded p-1 flex items-center justify-center">
-            {/* Logo showing people icons and myspace text */}
+          <div className="flex items-center">
+            {/* MySpace logo - person icon + text */}
             <div className="flex items-center">
-              {/* People icon group */}
-              <div className="mr-2 flex relative">
-                <div className="w-3 h-3 bg-white rounded-full absolute top-0 left-0"></div>
-                <div className="w-3 h-3 bg-white rounded-full absolute top-0 left-3"></div>
-                <div className="w-4 h-4 bg-white rounded-full absolute top-2 left-1.5"></div>
-                <div className="w-5 h-5 bg-white absolute top-4 left-0 rounded-tl-full"></div>
-                <div className="w-1 h-2 invisible">-</div> {/* Spacer */}
+              {/* Person icon */}
+              <div className="mr-2 relative w-8 h-8">
+                <div className="w-4 h-4 bg-white rounded-full absolute top-0 left-0"></div>
+                <div className="w-7 h-7 bg-white absolute bottom-0 left-0 rounded-tl-full rounded-tr-full"></div>
               </div>
+              
               {/* myspace text */}
-              <div className="text-xl font-bold tracking-wide text-white">myspace</div>
-              <span className="text-xs align-top">®</span>
+              <div>
+                <span className="text-2xl font-bold tracking-wide text-white">myspace</span>
+                <span className="text-xs align-top text-white">®</span>
+                <div className="text-xs text-white mt-[-2px]">a place for friends</div>
+              </div>
             </div>
-          </div>
-          <div>
-            <div className="text-xs text-white mt-1">a place for friends</div>
           </div>
         </div>
         
         <div className="flex items-center gap-2">
-          <span>Search Users:</span>
+          <span className="text-white">Search Users:</span>
           <input 
             type="text" 
             className="border border-gray-300 px-2 py-1 rounded text-black"
@@ -39,9 +37,9 @@ const Header = () => {
         
         <div className="flex gap-2">
           <Link to="/" className="text-white hover:underline">Help</Link>
-          <span>|</span>
+          <span className="text-white">|</span>
           <Link to="/" className="text-white hover:underline">LogIn</Link>
-          <span>|</span>
+          <span className="text-white">|</span>
           <Link to="/" className="text-white hover:underline">SignUp</Link>
         </div>
       </div>
