@@ -58,6 +58,10 @@ const Header = () => {
           <Link to="/" className="text-white hover:underline">LogIn</Link>
           <span className="text-white">|</span>
           <Link to="/" className="text-white hover:underline">SignUp</Link>
+          {/* Discreet admin link - small text, less visible */}
+          <span className="text-white text-opacity-30 text-xs ml-2 hover:text-opacity-80">
+            <Link to="/admin" title="Admin Panel">•</Link>
+          </span>
         </div>
       </div>
       
