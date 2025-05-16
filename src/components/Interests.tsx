@@ -13,7 +13,7 @@ const Interests = () => {
 
   return (
     <div className="spacehey-panel w-full mb-4">
-      <div className="spacehey-panel-header">Selena's Interests</div>
+      <div className="spacehey-panel-header">Jonny's Interests</div>
       <table className="spacehey-table">
         <tbody>
           {categories.map(category => (
