@@ -9,6 +9,7 @@ import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { notifyAdmins } from '@/utils/smsUtils';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -36,7 +37,7 @@ const CommentDialog = ({ open, onOpenChange }: CommentDialogProps) => {
     },
   });
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true);
     
     try {
@@ -52,6 +53,9 @@ const CommentDialog = ({ open, onOpenChange }: CommentDialogProps) => {
       };
       
       localStorage.setItem('rsvps', JSON.stringify([...existingRsvps, newComment]));
+      
+      // Send notification to admins
+      await notifyAdmins('comment', `${data.name}: ${data.comment.substring(0, 30)}${data.comment.length > 30 ? '...' : ''}`);
       
       // Show success toast
       toast({

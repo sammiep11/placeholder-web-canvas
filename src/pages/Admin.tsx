@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { getPhotos, deletePhoto } from "@/utils/photoUtils";
+import AdminSettings from "@/components/AdminSettings";
+import TextMessages from "@/components/TextMessages";
 
 const Admin = () => {
   const [activeTab, setActiveTab] = useState("rsvps");
@@ -18,13 +21,13 @@ const Admin = () => {
     // Load RSVPs
     const storedRsvps = localStorage.getItem("rsvps");
     if (storedRsvps) {
-      setRsvps(JSON.parse(storedRsvps));
-    }
-
-    // Load comments
-    const storedComments = localStorage.getItem("comments");
-    if (storedComments) {
-      setComments(JSON.parse(storedComments));
+      const parsedRsvps = JSON.parse(storedRsvps);
+      // Filter RSVPs and comments
+      setRsvps(parsedRsvps.filter((item: any) => item.type === 'rsvp'));
+      setComments(parsedRsvps.filter((item: any) => 
+        item.type === 'comment' || 
+        (item.type === 'rsvp' && item.comment && item.comment.trim() !== '')
+      ));
     }
 
     if (activeTab === "photos") {
@@ -34,9 +37,12 @@ const Admin = () => {
     }
   }, [activeTab]);
 
-  const handleDeleteRsvp = (email: string) => {
-    const updatedRsvps = rsvps.filter((rsvp) => rsvp.email !== email);
-    localStorage.setItem("rsvps", JSON.stringify(updatedRsvps));
+  const handleDeleteRsvp = (id: string) => {
+    const updatedRsvps = rsvps.filter((rsvp) => rsvp.id !== id);
+    // Get all items and filter out the deleted one
+    const allItems = JSON.parse(localStorage.getItem("rsvps") || '[]');
+    const updatedItems = allItems.filter((item: any) => item.id !== id);
+    localStorage.setItem("rsvps", JSON.stringify(updatedItems));
     setRsvps(updatedRsvps);
     toast({
       title: "RSVP deleted",
@@ -46,7 +52,10 @@ const Admin = () => {
 
   const handleDeleteComment = (id: string) => {
     const updatedComments = comments.filter((comment) => comment.id !== id);
-    localStorage.setItem("comments", JSON.stringify(updatedComments));
+    // Get all items and filter out the deleted one
+    const allItems = JSON.parse(localStorage.getItem("rsvps") || '[]');
+    const updatedItems = allItems.filter((item: any) => item.id !== id);
+    localStorage.setItem("rsvps", JSON.stringify(updatedItems));
     setComments(updatedComments);
     toast({
       title: "Comment deleted",
@@ -75,15 +84,18 @@ const Admin = () => {
           </div>
           <div className="p-4">
             <p className="mb-4">
-              Manage RSVPs, comments, and other site content here.
+              Manage RSVPs, comments, messages, and other site content here.
             </p>
 
             <Tabs defaultValue="rsvps" onValueChange={(value) => setActiveTab(value)}>
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="rsvps">RSVPs</TabsTrigger>
                 <TabsTrigger value="comments">Comments</TabsTrigger>
                 <TabsTrigger value="photos">Photos</TabsTrigger>
+                <TabsTrigger value="messages">Messages</TabsTrigger>
+                <TabsTrigger value="settings">Settings</TabsTrigger>
               </TabsList>
+              
               <TabsContent value="rsvps">
                 <div className="space-y-4">
                   <h2 className="text-xl font-bold">Manage RSVPs</h2>
@@ -92,7 +104,7 @@ const Admin = () => {
                       <thead>
                         <tr className="bg-gray-100">
                           <th className="px-4 py-2 text-left">Name</th>
-                          <th className="px-4 py-2 text-left">Email</th>
+                          <th className="px-4 py-2 text-left">Phone</th>
                           <th className="px-4 py-2 text-left">Attending</th>
                           <th className="px-4 py-2 text-left">Guests</th>
                           <th className="px-4 py-2 text-left">Actions</th>
@@ -107,16 +119,16 @@ const Admin = () => {
                           </tr>
                         ) : (
                           rsvps.map((rsvp) => (
-                            <tr key={rsvp.email}>
+                            <tr key={rsvp.id}>
                               <td className="px-4 py-2">{rsvp.name}</td>
-                              <td className="px-4 py-2">{rsvp.email}</td>
-                              <td className="px-4 py-2">{rsvp.attending ? "Yes" : "No"}</td>
+                              <td className="px-4 py-2">{rsvp.phone}</td>
+                              <td className="px-4 py-2">{rsvp.attendance}</td>
                               <td className="px-4 py-2">{rsvp.guests}</td>
                               <td className="px-4 py-2">
                                 <Button
                                   variant="destructive"
                                   size="sm"
-                                  onClick={() => handleDeleteRsvp(rsvp.email)}
+                                  onClick={() => handleDeleteRsvp(rsvp.id)}
                                 >
                                   Delete
                                 </Button>
@@ -129,6 +141,7 @@ const Admin = () => {
                   </div>
                 </div>
               </TabsContent>
+              
               <TabsContent value="comments">
                 <div className="space-y-4">
                   <h2 className="text-xl font-bold">Manage Comments</h2>
@@ -170,6 +183,7 @@ const Admin = () => {
                   </div>
                 </div>
               </TabsContent>
+              
               <TabsContent value="photos">
                 <div className="space-y-4">
                   <h2 className="text-xl font-bold">Manage Photos</h2>
@@ -225,6 +239,14 @@ const Admin = () => {
                     </table>
                   </div>
                 </div>
+              </TabsContent>
+              
+              <TabsContent value="messages">
+                <TextMessages />
+              </TabsContent>
+              
+              <TabsContent value="settings">
+                <AdminSettings />
               </TabsContent>
             </Tabs>
           </div>

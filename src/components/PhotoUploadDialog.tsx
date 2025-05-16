@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Album } from "@/pages/Photos";
 import { addPhoto } from "@/utils/photoUtils";
+import { notifyAdmins } from '@/utils/smsUtils';
+import { useToast } from "@/hooks/use-toast";
 
 interface PhotoUploadDialogProps {
   open: boolean;
@@ -15,6 +16,7 @@ interface PhotoUploadDialogProps {
 }
 
 const PhotoUploadDialog = ({ open, onOpenChange, album, onSuccess }: PhotoUploadDialogProps) => {
+  const { toast } = useToast();
   const [name, setName] = useState("");
   const [caption, setCaption] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -33,29 +35,48 @@ const PhotoUploadDialog = ({ open, onOpenChange, album, onSuccess }: PhotoUpload
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!imagePreview || !name) return;
 
     setUploading(true);
     
-    // Add photo to storage
-    addPhoto({
-      src: imagePreview,
-      caption,
-      uploadedBy: name,
-      album,
-    });
-
-    // Reset form
-    setName("");
-    setCaption("");
-    setImageFile(null);
-    setImagePreview(null);
-    setUploading(false);
-    
-    onSuccess?.();
-    onOpenChange(false);
+    try {
+      // Add photo to storage
+      addPhoto({
+        src: imagePreview,
+        caption,
+        uploadedBy: name,
+        album,
+      });
+      
+      // Send notification to admins
+      await notifyAdmins('photo', `${name} uploaded a photo to the ${album} album`);
+      
+      // Show success toast
+      toast({
+        title: "Photo Uploaded!",
+        description: `Your photo has been added to the ${album} album.`,
+      });
+      
+      // Reset form
+      setName("");
+      setCaption("");
+      setImageFile(null);
+      setImagePreview(null);
+      
+      onSuccess?.();
+      onOpenChange(false);
+    } catch (error) {
+      console.error('Error uploading photo:', error);
+      toast({
+        title: "Upload Failed",
+        description: "There was an error uploading your photo. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (

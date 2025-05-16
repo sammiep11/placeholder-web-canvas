@@ -10,6 +10,7 @@ import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { notifyAdmins } from '@/utils/smsUtils';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -45,7 +46,7 @@ const RsvpDialog = ({ open, onOpenChange }: RsvpDialogProps) => {
     },
   });
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true);
     
     try {
@@ -61,6 +62,9 @@ const RsvpDialog = ({ open, onOpenChange }: RsvpDialogProps) => {
       };
       
       localStorage.setItem('rsvps', JSON.stringify([...existingRsvps, newRsvp]));
+      
+      // Send notification to admins
+      await notifyAdmins('rsvp', `${data.name} (${data.attendance})`);
       
       // Show success toast
       toast({
