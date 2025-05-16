@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const ContactInfo = () => {
   return (
@@ -60,6 +61,15 @@ const ContactInfo = () => {
             <path fillRule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" clipRule="evenodd" />
           </svg>
           <span className="text-blue-700 hover:underline cursor-pointer">Report User</span>
+        </div>
+        
+        {/* New Photos Link */}
+        <div className="flex items-center gap-1">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4V5h12v10z" clipRule="evenodd" />
+            <path d="M8 7a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+          </svg>
+          <Link to="/photos" className="text-blue-700 hover:underline cursor-pointer">View Photos</Link>
         </div>
       </div>
     </div>
