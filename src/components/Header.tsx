@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -7,7 +8,7 @@ const Header = () => {
       <div className="spacehey-header flex justify-between items-center">
         <div className="flex items-center gap-2">
           <div className="bg-white text-primary rounded p-1 flex items-center justify-center">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Myspace_logo.svg" alt="MySpace Logo" className="h-8" />
+            <div className="text-lg font-bold text-blue-600">my_</div>
           </div>
           <div>
             <div className="text-2xl font-bold">MySpace</div>
