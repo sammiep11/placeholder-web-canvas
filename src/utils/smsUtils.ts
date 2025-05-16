@@ -1,4 +1,6 @@
+
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 // Types for SMS functionality
 export interface SmsConfig {
@@ -171,35 +173,41 @@ export const sendTextBlast = async (
   };
 };
 
-// Extract phone numbers from RSVPs
-export const getPhoneNumbersFromRsvps = (onlyAttending: boolean = false): string[] => {
+// Extract phone numbers from RSVPs in Supabase
+export const getPhoneNumbersFromRsvps = async (onlyAttending: boolean = false): Promise<string[]> => {
   try {
-    const storageData = localStorage.getItem('rsvps');
-    if (!storageData) return [];
+    // Fetch RSVPs from Supabase instead of localStorage
+    const query = supabase
+      .from('rsvps_comments')
+      .select('*')
+      .eq('type', 'rsvp')
+      .not('phone', 'is', null);
     
-    const allRsvps = JSON.parse(storageData) as Array<{
-      type: string;
-      phone?: string;
-      attendance?: string;
-    }>;
+    // If onlyAttending is true, filter for yes/maybe responses
+    if (onlyAttending) {
+      query.in('attendance', ['yes', 'maybe']);
+    }
     
-    const filteredRsvps = allRsvps.filter((rsvp) => {
-      // Only get entries with type 'rsvp' and phone numbers
-      if (rsvp.type !== 'rsvp' || !rsvp.phone) return false;
-      
-      // If onlyAttending is true, filter for yes/maybe responses
-      if (onlyAttending) {
-        return rsvp.attendance === 'yes' || rsvp.attendance === 'maybe';
-      }
-      
-      return true;
-    });
+    const { data: allRsvps, error } = await query;
+    
+    if (error) {
+      console.error('Error fetching RSVPs:', error);
+      return [];
+    }
+    
+    if (!allRsvps || allRsvps.length === 0) {
+      return [];
+    }
     
     // Extract unique phone numbers
-    const phoneNumbers = filteredRsvps.map((rsvp) => rsvp.phone as string);
+    const phoneNumbers = allRsvps
+      .filter(rsvp => rsvp.phone)
+      .map(rsvp => rsvp.phone as string);
+    
     return [...new Set(phoneNumbers)]; // Remove duplicates
   } catch (error) {
     console.error('Error getting phone numbers:', error);
     return [];
   }
 };
+

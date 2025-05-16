@@ -29,6 +29,7 @@ const TextMessages = () => {
   const [recipientCount, setRecipientCount] = useState(0);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [isTwilioConfigured, setIsTwilioConfigured] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
     // Check if Twilio is configured
@@ -40,9 +41,25 @@ const TextMessages = () => {
     );
     
     // Update recipient count based on selection
-    const recipients = getPhoneNumbersFromRsvps(audienceType === 'attending');
-    setRecipientCount(recipients.length);
-  }, [audienceType]);
+    const updateRecipientCount = async () => {
+      setIsLoading(true);
+      try {
+        const recipients = await getPhoneNumbersFromRsvps(audienceType === 'attending');
+        setRecipientCount(recipients.length);
+      } catch (error) {
+        console.error("Error fetching recipient count:", error);
+        toast({
+          title: 'Error',
+          description: 'Failed to fetch recipients',
+          variant: 'destructive'
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    updateRecipientCount();
+  }, [audienceType, toast]);
   
   const handleSendMessage = async () => {
     if (!message.trim()) {
@@ -58,7 +75,7 @@ const TextMessages = () => {
     
     try {
       // Get recipients based on selected audience type
-      const recipients = getPhoneNumbersFromRsvps(audienceType === 'attending');
+      const recipients = await getPhoneNumbersFromRsvps(audienceType === 'attending');
       
       if (recipients.length === 0) {
         toast({
@@ -129,11 +146,21 @@ const TextMessages = () => {
           >
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="attending" id="attending" />
-              <Label htmlFor="attending">Only those attending or maybe attending ({getPhoneNumbersFromRsvps(true).length})</Label>
+              <Label htmlFor="attending">
+                {isLoading 
+                  ? "Loading attending RSVPs..." 
+                  : `Only those attending or maybe attending (${recipientCount})`
+                }
+              </Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="all" id="all" />
-              <Label htmlFor="all">All RSVPs ({getPhoneNumbersFromRsvps(false).length})</Label>
+              <Label htmlFor="all">
+                {isLoading 
+                  ? "Loading all RSVPs..." 
+                  : `All RSVPs (${recipientCount})`
+                }
+              </Label>
             </div>
           </RadioGroup>
         </div>
@@ -156,9 +183,9 @@ const TextMessages = () => {
         <div className="pt-2">
           <Button
             onClick={() => setConfirmDialogOpen(true)}
-            disabled={isSending || !message.trim() || recipientCount === 0 || !isTwilioConfigured}
+            disabled={isSending || !message.trim() || recipientCount === 0 || !isTwilioConfigured || isLoading}
           >
-            {isSending ? 'Sending...' : `Send to ${recipientCount} recipients`}
+            {isSending ? 'Sending...' : (isLoading ? 'Loading recipients...' : `Send to ${recipientCount} recipients`)}
           </Button>
         </div>
       </div>
