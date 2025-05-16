@@ -39,11 +39,11 @@ const Profile = () => {
           </div>
           
           <div className="mb-6 flex justify-center">
-            <Avatar className="w-32 h-32 border border-gray-300">
+            <Avatar className="w-32 h-32 border border-gray-300 overflow-hidden">
               <AvatarImage 
                 src="/profile-pic.jpeg" 
                 alt="Profile Picture"
-                className="object-cover"
+                className="object-cover scale-[1.3] origin-center"
               />
               <AvatarFallback className="text-2xl">J</AvatarFallback>
             </Avatar>
