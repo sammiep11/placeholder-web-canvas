@@ -9,7 +9,111 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      photos: {
+        Row: {
+          album: string
+          caption: string | null
+          created_at: string
+          id: string
+          src: string | null
+          storage_path: string | null
+          uploaded_by: string
+        }
+        Insert: {
+          album: string
+          caption?: string | null
+          created_at?: string
+          id?: string
+          src?: string | null
+          storage_path?: string | null
+          uploaded_by: string
+        }
+        Update: {
+          album?: string
+          caption?: string | null
+          created_at?: string
+          id?: string
+          src?: string | null
+          storage_path?: string | null
+          uploaded_by?: string
+        }
+        Relationships: []
+      }
+      rsvps_comments: {
+        Row: {
+          aim_screen_name: string
+          attendance: string | null
+          comment: string | null
+          created_at: string
+          guests: number | null
+          id: string
+          name: string
+          phone: string | null
+          type: string
+        }
+        Insert: {
+          aim_screen_name: string
+          attendance?: string | null
+          comment?: string | null
+          created_at?: string
+          guests?: number | null
+          id?: string
+          name: string
+          phone?: string | null
+          type: string
+        }
+        Update: {
+          aim_screen_name?: string
+          attendance?: string | null
+          comment?: string | null
+          created_at?: string
+          guests?: number | null
+          id?: string
+          name?: string
+          phone?: string | null
+          type?: string
+        }
+        Relationships: []
+      }
+      sms_config: {
+        Row: {
+          admin_phone_numbers: string[] | null
+          created_at: string
+          id: string
+          notify_on_comment: boolean | null
+          notify_on_photo: boolean | null
+          notify_on_rsvp: boolean | null
+          twilio_account_sid: string | null
+          twilio_auth_token: string | null
+          twilio_phone_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          admin_phone_numbers?: string[] | null
+          created_at?: string
+          id?: string
+          notify_on_comment?: boolean | null
+          notify_on_photo?: boolean | null
+          notify_on_rsvp?: boolean | null
+          twilio_account_sid?: string | null
+          twilio_auth_token?: string | null
+          twilio_phone_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admin_phone_numbers?: string[] | null
+          created_at?: string
+          id?: string
+          notify_on_comment?: boolean | null
+          notify_on_photo?: boolean | null
+          notify_on_rsvp?: boolean | null
+          twilio_account_sid?: string | null
+          twilio_auth_token?: string | null
+          twilio_phone_number?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

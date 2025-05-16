@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -42,13 +43,17 @@ const PhotoUploadDialog = ({ open, onOpenChange, album, onSuccess }: PhotoUpload
     setUploading(true);
     
     try {
-      // Add photo to storage
-      addPhoto({
+      // Add photo to Supabase
+      const newPhoto = await addPhoto({
         src: imagePreview,
         caption,
         uploadedBy: name,
         album,
       });
+      
+      if (!newPhoto) {
+        throw new Error("Failed to upload photo");
+      }
       
       // Send notification to admins
       await notifyAdmins('photo', `${name} uploaded a photo to the ${album} album`);

@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PhotoAlbum from "@/components/PhotoAlbum";
@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-is-mobile";
+import { supabase } from "@/integrations/supabase/client";
 
 export type Album = "throwbacks" | "inspiration" | "party";
 
@@ -29,6 +30,25 @@ const Photos = () => {
   const handleTabChange = (value: string) => {
     setActiveTab(value as Album);
   };
+
+  // Set up real-time subscription
+  useEffect(() => {
+    const channel = supabase
+      .channel('photos-changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'photos' },
+        () => {
+          // Force refresh the current album when photos change
+          const event = new CustomEvent('photos-updated', { detail: { album: activeTab } });
+          window.dispatchEvent(event);
+        }
+      )
+      .subscribe();
+      
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [activeTab]);
   
   return (
     <div className="min-h-screen bg-white">

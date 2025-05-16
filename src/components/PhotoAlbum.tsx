@@ -15,12 +15,19 @@ interface PhotoAlbumProps {
 
 const PhotoAlbum = ({ album }: PhotoAlbumProps) => {
   const [photos, setPhotos] = useState<Photo[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    const fetchedPhotos = getPhotos(album);
-    setPhotos(fetchedPhotos);
+    const fetchPhotos = async () => {
+      setLoading(true);
+      const fetchedPhotos = await getPhotos(album);
+      setPhotos(fetchedPhotos);
+      setLoading(false);
+    };
+    
+    fetchPhotos();
   }, [album]);
 
   const handlePhotoClick = (photo: Photo) => {
@@ -35,6 +42,14 @@ const PhotoAlbum = ({ album }: PhotoAlbumProps) => {
     link.click();
     document.body.removeChild(link);
   };
+
+  if (loading) {
+    return (
+      <div className="text-center p-4 sm:p-10">
+        <p>Loading photos...</p>
+      </div>
+    );
+  }
 
   if (photos.length === 0) {
     return (

@@ -11,6 +11,7 @@ import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { notifyAdmins } from '@/utils/smsUtils';
+import { supabase } from "@/integrations/supabase/client";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -46,22 +47,62 @@ const RsvpDialog = ({ open, onOpenChange }: RsvpDialogProps) => {
     },
   });
 
+  const migrateExistingRsvps = async () => {
+    try {
+      // Check if migration has been done
+      const { count } = await supabase
+        .from('rsvps_comments')
+        .select('*', { count: 'exact', head: true });
+        
+      if (count && count > 0) {
+        // Already migrated
+        return;
+      }
+      
+      // Get existing RSVPs from localStorage
+      const existingRsvps = JSON.parse(localStorage.getItem('rsvps') || '[]');
+      
+      // Bulk insert
+      if (existingRsvps.length > 0) {
+        const formattedRsvps = existingRsvps.map((rsvp: any) => ({
+          name: rsvp.name,
+          aim_screen_name: rsvp.aimScreenName || '',
+          phone: rsvp.phone || '',
+          attendance: rsvp.attendance || 'yes',
+          guests: parseInt(rsvp.guests || '0'),
+          comment: rsvp.comment || '',
+          type: rsvp.type || 'rsvp',
+          created_at: rsvp.date || new Date().toISOString()
+        }));
+        
+        await supabase.from('rsvps_comments').insert(formattedRsvps);
+      }
+    } catch (error) {
+      console.error('Error migrating RSVPs:', error);
+    }
+  };
+
   const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true);
     
     try {
-      // Get existing RSVPs from localStorage or initialize empty array
-      const existingRsvps = JSON.parse(localStorage.getItem('rsvps') || '[]');
+      // Migrate existing RSVPs if this is our first Supabase RSVP
+      await migrateExistingRsvps();
       
       // Add new RSVP with timestamp
-      const newRsvp = {
-        ...data,
-        date: new Date().toISOString(),
-        id: Date.now().toString(),
-        type: 'rsvp', // Mark it as RSVP type
-      };
+      const { error } = await supabase.from('rsvps_comments').insert({
+        name: data.name,
+        aim_screen_name: data.aimScreenName,
+        phone: data.phone,
+        attendance: data.attendance,
+        guests: parseInt(data.guests || '0'),
+        comment: data.comment || null,
+        type: 'rsvp',
+      });
       
-      localStorage.setItem('rsvps', JSON.stringify([...existingRsvps, newRsvp]));
+      if (error) {
+        throw error;
+      }
       
       // Send notification to admins
       await notifyAdmins('rsvp', `${data.name} (${data.attendance})`);
