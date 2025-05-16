@@ -9,7 +9,7 @@ const FriendSpace = () => {
   const friends = [
     {
       name: "Tom",
-      imgSrc: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7",
+      imgSrc: "/tom.jpeg",
       verified: true
     },
     {
