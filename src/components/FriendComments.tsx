@@ -4,35 +4,49 @@ import { Link } from 'react-router-dom';
 import { Button } from './ui/button';
 import { MessageSquare } from 'lucide-react';
 import RsvpDialog from './RsvpDialog';
+import CommentDialog from './CommentDialog';
 
-type RsvpComment = {
+type Comment = {
   id: string;
   name: string;
   aimScreenName: string;
   comment: string;
   date: string;
+  type: 'rsvp' | 'comment';
 };
 
 const FriendComments = () => {
-  const [comments, setComments] = useState<RsvpComment[]>([]);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [isRsvpDialogOpen, setIsRsvpDialogOpen] = useState(false);
+  const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
   
   // Load comments from localStorage whenever component mounts
   useEffect(() => {
     const loadComments = () => {
       try {
         const rsvps = JSON.parse(localStorage.getItem('rsvps') || '[]');
-        // Filter RSVPs that have comments
-        const rsvpComments = rsvps
-          .filter((rsvp: any) => rsvp.comment && rsvp.comment.trim() !== '')
-          .map((rsvp: any) => ({
-            id: rsvp.id,
-            name: rsvp.name,
-            aimScreenName: rsvp.aimScreenName,
-            comment: rsvp.comment,
-            date: rsvp.date,
+        // Filter items that have comments
+        const allComments = rsvps
+          .filter((item: any) => 
+            // Include RSVP comments and standalone comments
+            (item.type === 'rsvp' && item.comment && item.comment.trim() !== '') || 
+            item.type === 'comment'
+          )
+          .map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            aimScreenName: item.aimScreenName,
+            comment: item.comment,
+            date: item.date,
+            type: item.type || 'rsvp', // Default to 'rsvp' for backward compatibility
           }));
-        setComments(rsvpComments);
+        
+        // Sort comments by date (newest first)
+        allComments.sort((a: Comment, b: Comment) => 
+          new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+        
+        setComments(allComments);
       } catch (error) {
         console.error('Error loading comments:', error);
       }
@@ -52,7 +66,7 @@ const FriendComments = () => {
         <div>*~Jonny~*'s Wall</div>
         <Link to="#" onClick={(e) => {
           e.preventDefault();
-          setIsRsvpDialogOpen(true);
+          setIsCommentDialogOpen(true);
         }} className="text-xs text-blue-700 hover:underline">[add comment]</Link>
       </div>
       
@@ -75,6 +89,9 @@ const FriendComments = () => {
                     <div>
                       <span className="font-bold text-blue-700">{comment.name}</span>
                       <span className="text-gray-500"> ({comment.aimScreenName})</span>
+                      {comment.type === 'rsvp' && (
+                        <span className="text-xs bg-pink-100 text-pink-700 rounded px-1 ml-1">RSVP</span>
+                      )}
                     </div>
                     <div className="text-xs text-gray-500 mb-1">
                       {new Date(comment.date).toLocaleDateString('en-US', {
@@ -106,6 +123,7 @@ const FriendComments = () => {
       </div>
       
       <RsvpDialog open={isRsvpDialogOpen} onOpenChange={setIsRsvpDialogOpen} />
+      <CommentDialog open={isCommentDialogOpen} onOpenChange={setIsCommentDialogOpen} />
     </div>
   );
 };

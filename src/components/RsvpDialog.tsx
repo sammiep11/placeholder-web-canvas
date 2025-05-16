@@ -57,6 +57,7 @@ const RsvpDialog = ({ open, onOpenChange }: RsvpDialogProps) => {
         ...data,
         date: new Date().toISOString(),
         id: Date.now().toString(),
+        type: 'rsvp', // Mark it as RSVP type
       };
       
       localStorage.setItem('rsvps', JSON.stringify([...existingRsvps, newRsvp]));
