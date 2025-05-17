@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Loader } from 'lucide-react';
+import { getFormatDisplayName } from '../utils/audioUtils';
 
 interface AudioStatusDisplayProps {
   isLoading: boolean;
@@ -13,7 +14,7 @@ const AudioStatusDisplay = ({ isLoading, error, currentFormat }: AudioStatusDisp
     return (
       <div className="flex items-center justify-start py-1">
         <Loader className="h-3 w-3 text-blue-600 animate-spin mr-2" />
-        <span className="text-xs text-gray-500">Loading...</span>
+        <span className="text-xs text-gray-500">Loading audio...</span>
       </div>
     );
   }
@@ -29,7 +30,7 @@ const AudioStatusDisplay = ({ isLoading, error, currentFormat }: AudioStatusDisp
   if (currentFormat) {
     return (
       <div className="text-xs text-gray-500">
-        Playing {currentFormat.replace('audio/', '')}
+        Playing {getFormatDisplayName(currentFormat)}
       </div>
     );
   }

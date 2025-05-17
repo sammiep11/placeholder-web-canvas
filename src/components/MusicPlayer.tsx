@@ -1,11 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import AudioControls from './AudioControls';
 import AudioStatusDisplay from './AudioStatusDisplay';
-import { SUPPORTED_FORMATS } from '../utils/audioUtils';
 
 const MusicPlayer = () => {
+  const [songTitle] = useState('"In Da Club" - 50 Cent');
   const { 
     audioRef, 
     isPlaying, 
@@ -13,16 +13,22 @@ const MusicPlayer = () => {
     isLoading, 
     loadError, 
     currentFormat,
-    togglePlayPause, 
-    handleSourceError
-  } = useAudioPlayer();
+    togglePlayPause
+  } = useAudioPlayer({
+    sources: [
+      { src: '/party-song.mp3', type: 'audio/mpeg' },
+      { src: '/party-song.ogg', type: 'audio/ogg' },
+      { src: '/party-song.wav', type: 'audio/wav' }
+    ],
+    songTitle
+  });
   
   return (
     <div className="spacehey-panel w-full mb-4">
       <div className="spacehey-panel-header">Now Playing</div>
       <div className="p-2 space-y-2">
         <div className="font-bold text-sm">
-          "In Da Club" - 50 Cent
+          {songTitle}
         </div>
         
         <AudioControls 
@@ -37,16 +43,6 @@ const MusicPlayer = () => {
           error={loadError}
           currentFormat={currentFormat}
         />
-        
-        <audio ref={audioRef} preload="auto">
-          {/* Use only MP3 format initially to simplify debugging */}
-          <source 
-            src="/party-song.mp3" 
-            type="audio/mpeg" 
-            onError={handleSourceError} 
-          />
-          Your browser does not support the audio element.
-        </audio>
       </div>
     </div>
   );
