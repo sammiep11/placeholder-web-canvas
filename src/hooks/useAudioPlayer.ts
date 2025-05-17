@@ -6,7 +6,6 @@ import { formatErrorMessage } from '../utils/audioUtils';
 export function useAudioPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [volume, setVolume] = useState(80);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [currentFormat, setCurrentFormat] = useState<string | null>(null);
@@ -50,15 +49,6 @@ export function useAudioPlayer() {
     }
   };
 
-  // Handle volume change
-  const handleVolumeChange = (newVolume: number[]) => {
-    const volumeValue = newVolume[0];
-    setVolume(volumeValue);
-    if (audioRef.current) {
-      audioRef.current.volume = volumeValue / 100;
-    }
-  };
-
   const handleSourceError = (e: React.SyntheticEvent<HTMLSourceElement>) => {
     console.log(`Source error for format: ${e.currentTarget.type}`);
     // We don't set the error here as we want to try all sources first
@@ -93,13 +83,11 @@ export function useAudioPlayer() {
     setLoadError(null);
   };
 
-  // Set initial volume and add event listeners
+  // Add event listeners
   useEffect(() => {
     console.log("MusicPlayer component mounted");
     
     if (audioRef.current) {
-      audioRef.current.volume = volume / 100;
-      
       // Audio loaded successfully
       const handleCanPlayThrough = () => {
         console.log("Audio can play through - loaded successfully");
@@ -146,12 +134,10 @@ export function useAudioPlayer() {
     audioRef,
     isPlaying,
     progress,
-    volume,
     isLoading,
     loadError,
     currentFormat,
     togglePlayPause,
-    handleVolumeChange,
     handleSourceError
   };
 }

@@ -23,7 +23,7 @@ const AudioControls = ({
         onClick={onTogglePlayPause} 
         variant="outline" 
         size="icon"
-        className="h-8 w-8 rounded-full border-blue-300"
+        className="h-8 w-8 rounded-sm border-blue-300 bg-blue-100 hover:bg-blue-200"
         disabled={isDisabled}
       >
         {isPlaying ? (
@@ -34,7 +34,7 @@ const AudioControls = ({
       </Button>
       
       <div className="flex-1">
-        <Progress value={progress} className="h-2" />
+        <Progress value={progress} className="h-1.5 bg-gray-200" />
       </div>
     </div>
   );
