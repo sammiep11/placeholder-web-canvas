@@ -13,6 +13,7 @@ const MusicPlayer = () => {
   const [volume, setVolume] = useState(80);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [currentFormat, setCurrentFormat] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const { toast } = useToast();
 
@@ -62,6 +63,11 @@ const MusicPlayer = () => {
     }
   };
 
+  const handleSourceError = (e: React.SyntheticEvent<HTMLSourceElement>) => {
+    console.log(`Source error for format: ${e.currentTarget.type}`);
+    // We don't set the error here as we want to try all sources first
+  };
+
   const handleAudioError = (e: Event) => {
     const audioElement = e.target as HTMLMediaElement;
     const error = audioElement.error;
@@ -82,7 +88,7 @@ const MusicPlayer = () => {
           errorMessage = "Audio file is corrupted or uses an unsupported format";
           break;
         case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-          errorMessage = "Audio format is not supported by your browser";
+          errorMessage = "None of the audio formats are supported by your browser";
           break;
         default:
           errorMessage = `Error loading audio: ${error.message || "unknown error"}`;
@@ -96,6 +102,19 @@ const MusicPlayer = () => {
       description: errorMessage,
       variant: "destructive"
     });
+  };
+  
+  const handleLoadedData = () => {
+    // Get the current source that successfully loaded
+    if (audioRef.current) {
+      const source = audioRef.current.querySelector('source[src="' + audioRef.current.currentSrc + '"]');
+      if (source) {
+        setCurrentFormat(source.getAttribute('type') || null);
+        console.log("Successfully loaded format:", source.getAttribute('type'));
+      }
+    }
+    setIsLoading(false);
+    setLoadError(null);
   };
 
   // Set initial volume and add event listeners
@@ -115,11 +134,11 @@ const MusicPlayer = () => {
       // Audio metadata loaded
       const handleLoadedMetadata = () => {
         console.log("Audio metadata loaded");
-        setIsLoading(false);
       };
 
       audioRef.current.addEventListener('canplaythrough', handleCanPlayThrough);
       audioRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
+      audioRef.current.addEventListener('loadeddata', handleLoadedData);
       audioRef.current.addEventListener('error', handleAudioError);
       audioRef.current.addEventListener('timeupdate', updateProgress);
       audioRef.current.addEventListener('ended', () => {
@@ -135,6 +154,7 @@ const MusicPlayer = () => {
         if (audioRef.current) {
           audioRef.current.removeEventListener('canplaythrough', handleCanPlayThrough);
           audioRef.current.removeEventListener('loadedmetadata', handleLoadedMetadata);
+          audioRef.current.removeEventListener('loadeddata', handleLoadedData);
           audioRef.current.removeEventListener('error', handleAudioError);
           audioRef.current.removeEventListener('timeupdate', updateProgress);
           audioRef.current.removeEventListener('ended', () => {
@@ -169,11 +189,16 @@ const MusicPlayer = () => {
           </Alert>
         )}
         
+        {currentFormat && !loadError && !isLoading && (
+          <div className="text-xs text-green-600">
+            Playing using {currentFormat.replace('audio/', '')} format
+          </div>
+        )}
+        
         <audio ref={audioRef} preload="auto">
-          {/* Provide multiple source formats for better compatibility */}
-          <source src="/party-song.mp3" type="audio/mpeg" />
-          <source src="/party-song.ogg" type="audio/ogg" />
-          <source src="/party-song.wav" type="audio/wav" />
+          <source src="/party-song.mp3" type="audio/mpeg" onError={handleSourceError} />
+          <source src="/party-song.ogg" type="audio/ogg" onError={handleSourceError} />
+          <source src="/party-song.wav" type="audio/wav" onError={handleSourceError} />
           Your browser does not support the audio element.
         </audio>
         
@@ -210,7 +235,7 @@ const MusicPlayer = () => {
         </div>
         
         <div className="text-xs text-gray-500 mt-1">
-          If audio doesn't load, try refreshing the page or check if your browser supports MP3, OGG, or WAV formats.
+          This player supports MP3, OGG, and WAV formats and will automatically use the first format that your browser supports.
         </div>
       </div>
     </div>
