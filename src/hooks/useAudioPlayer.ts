@@ -18,25 +18,43 @@ export function useAudioPlayer() {
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
+        setIsPlaying(false);
       } else {
-        const playPromise = audioRef.current.play();
-        
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              console.log('Audio playback started successfully');
-            })
-            .catch(err => {
-              console.error('Error playing audio:', err);
-              toast({
-                title: "Playback Error",
-                description: "Could not play the audio. Try again.",
-                variant: "destructive"
+        console.log("Attempting to play audio...");
+        // Force reload before playing
+        try {
+          audioRef.current.load();
+          
+          const playPromise = audioRef.current.play();
+          
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                console.log('Audio playback started successfully');
+                setIsPlaying(true);
+              })
+              .catch(err => {
+                console.error('Error playing audio:', err);
+                // Check if this is an autoplay policy issue
+                if (err.name === "NotAllowedError") {
+                  toast({
+                    title: "Autoplay Blocked",
+                    description: "Browser requires user interaction to play audio. Click play again.",
+                    variant: "destructive"
+                  });
+                } else {
+                  toast({
+                    title: "Playback Error",
+                    description: "Could not play the audio. Try again.",
+                    variant: "destructive"
+                  });
+                }
               });
-            });
+          }
+        } catch (err) {
+          console.error("Error attempting to play:", err);
         }
       }
-      setIsPlaying(!isPlaying);
     }
   };
 
@@ -53,16 +71,21 @@ export function useAudioPlayer() {
     const sourceElement = e.currentTarget;
     console.log(`Source error for format: ${sourceElement.type}`);
     console.log(`Attempted to load: ${sourceElement.src}`);
-    console.log(`Current pathname: ${window.location.pathname}`);
-    console.log(`Base URL: ${document.baseURI}`);
     
-    // Check if file exists with fetch
-    fetch(sourceElement.src)
+    // Check if file exists with fetch again directly
+    const absoluteUrl = new URL(sourceElement.src, window.location.origin).href;
+    console.log(`Checking absolute URL: ${absoluteUrl}`);
+    
+    fetch(absoluteUrl, { method: 'HEAD' })
       .then(response => {
-        console.log(`Fetch response for ${sourceElement.src}: status ${response.status}`);
+        console.log(`HEAD request for ${absoluteUrl}: status ${response.status}`);
+        if (response.ok) {
+          console.log("File exists but audio element can't play it");
+          setLoadError("File exists but can't be played. Check CORS or file format.");
+        }
       })
       .catch(err => {
-        console.error(`Fetch error for ${sourceElement.src}:`, err);
+        console.error(`Fetch error for ${absoluteUrl}:`, err);
       });
   };
 
@@ -83,15 +106,11 @@ export function useAudioPlayer() {
   };
   
   const handleLoadedData = () => {
+    console.log("Audio data loaded successfully");
     // Get the current source that successfully loaded
     if (audioRef.current) {
-      const source = audioRef.current.querySelector('source[src="' + audioRef.current.currentSrc + '"]');
-      if (source) {
-        const format = source.getAttribute('type') || null;
-        setCurrentFormat(format);
-        console.log("Successfully loaded format:", format);
-        console.log("Source URL that worked:", audioRef.current.currentSrc);
-      }
+      setCurrentFormat("audio/mpeg");
+      console.log("Source URL that worked:", audioRef.current.currentSrc);
     }
     setIsLoading(false);
     setLoadError(null);
@@ -102,6 +121,8 @@ export function useAudioPlayer() {
     console.log("MusicPlayer component mounted");
     
     if (audioRef.current) {
+      const audio = audioRef.current;
+      
       // Audio loaded successfully
       const handleCanPlayThrough = () => {
         console.log("Audio can play through - loaded successfully");
@@ -114,32 +135,36 @@ export function useAudioPlayer() {
         console.log("Audio metadata loaded");
       };
 
-      audioRef.current.addEventListener('canplaythrough', handleCanPlayThrough);
-      audioRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
-      audioRef.current.addEventListener('loadeddata', handleLoadedData);
-      audioRef.current.addEventListener('error', handleAudioError);
-      audioRef.current.addEventListener('timeupdate', updateProgress);
-      audioRef.current.addEventListener('ended', () => {
+      audio.addEventListener('canplaythrough', handleCanPlayThrough);
+      audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.addEventListener('loadeddata', handleLoadedData);
+      audio.addEventListener('error', handleAudioError);
+      audio.addEventListener('timeupdate', updateProgress);
+      audio.addEventListener('ended', () => {
         console.log("Audio playback ended");
         setIsPlaying(false);
         setProgress(0);
       });
 
       // Force reload the audio to ensure proper loading
-      audioRef.current.load();
+      console.log("Force reloading audio element");
+      try {
+        audio.load();
+      } catch (err) {
+        console.error("Error loading audio:", err);
+      }
 
       return () => {
-        if (audioRef.current) {
-          audioRef.current.removeEventListener('canplaythrough', handleCanPlayThrough);
-          audioRef.current.removeEventListener('loadedmetadata', handleLoadedMetadata);
-          audioRef.current.removeEventListener('loadeddata', handleLoadedData);
-          audioRef.current.removeEventListener('error', handleAudioError);
-          audioRef.current.removeEventListener('timeupdate', updateProgress);
-          audioRef.current.removeEventListener('ended', () => {
-            setIsPlaying(false);
-            setProgress(0);
-          });
-        }
+        // Clean up event listeners
+        audio.removeEventListener('canplaythrough', handleCanPlayThrough);
+        audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        audio.removeEventListener('loadeddata', handleLoadedData);
+        audio.removeEventListener('error', handleAudioError);
+        audio.removeEventListener('timeupdate', updateProgress);
+        audio.removeEventListener('ended', () => {
+          setIsPlaying(false);
+          setProgress(0);
+        });
       };
     }
   }, []);

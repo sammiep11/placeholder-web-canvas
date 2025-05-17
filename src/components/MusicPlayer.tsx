@@ -16,16 +16,7 @@ const MusicPlayer = () => {
     togglePlayPause, 
     handleSourceError
   } = useAudioPlayer();
-
-  // Calculate absolute URL for audio files
-  const getAudioUrl = (extension: string) => {
-    // In development mode, the public directory is served at the root
-    // Try without using window.location.origin to avoid any path issues
-    return `/${extension === 'mp3' ? 'party-song.mp3' : 
-             extension === 'ogg' ? 'party-song.ogg' : 
-             'party-song.wav'}`;
-  };
-
+  
   return (
     <div className="spacehey-panel w-full mb-4">
       <div className="spacehey-panel-header">Now Playing</div>
@@ -48,14 +39,12 @@ const MusicPlayer = () => {
         />
         
         <audio ref={audioRef} preload="auto">
-          {SUPPORTED_FORMATS.map(format => (
-            <source 
-              key={format.type}
-              src={getAudioUrl(format.extension)} 
-              type={format.type} 
-              onError={handleSourceError} 
-            />
-          ))}
+          {/* Use only MP3 format initially to simplify debugging */}
+          <source 
+            src="/party-song.mp3" 
+            type="audio/mpeg" 
+            onError={handleSourceError} 
+          />
           Your browser does not support the audio element.
         </audio>
       </div>
