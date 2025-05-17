@@ -21,8 +21,13 @@ const AudioStatusDisplay = ({ isLoading, error, currentFormat }: AudioStatusDisp
   
   if (error) {
     return (
-      <div className="text-xs text-red-500 py-1">
-        {error}
+      <div className="flex flex-col gap-1">
+        <div className="text-xs text-red-500 py-1">
+          {error}
+        </div>
+        <div className="text-xs text-gray-500">
+          Please ensure audio files exist in the public folder.
+        </div>
       </div>
     );
   }

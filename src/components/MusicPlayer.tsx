@@ -6,6 +6,8 @@ import AudioStatusDisplay from './AudioStatusDisplay';
 
 const MusicPlayer = () => {
   const [songTitle] = useState('"In Da Club" - 50 Cent');
+  
+  // Include AAC format which is widely supported
   const { 
     audioRef, 
     isPlaying, 
@@ -17,6 +19,7 @@ const MusicPlayer = () => {
   } = useAudioPlayer({
     sources: [
       { src: '/party-song.mp3', type: 'audio/mpeg' },
+      { src: '/party-song.m4a', type: 'audio/mp4' },  // AAC format
       { src: '/party-song.ogg', type: 'audio/ogg' },
       { src: '/party-song.wav', type: 'audio/wav' }
     ],
