@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Map, Phone, Music } from 'lucide-react';
+import { Map, Phone } from 'lucide-react';
 import { Popover, PopoverTrigger, PopoverContent } from '../components/ui/popover';
 
 const ContactInfo = () => {
@@ -38,9 +38,14 @@ const ContactInfo = () => {
           </Popover>
         </div>
 
-        {/* New "Party playlist" link */}
+        {/* Party playlist link with Napster icon */}
         <div className="flex items-center gap-1">
-          <Music className="h-5 w-5 text-green-500" />
+          <img 
+            src="/napster.svg" 
+            alt="Napster" 
+            className="h-5 w-5 text-green-500" 
+            style={{ filter: 'invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(90%) contrast(95%)' }}
+          />
           <a 
             href="https://open.spotify.com/playlist/18ZtmLtuunIQSmCLWTbFC0?si=df8afae2d3a043d1" 
             target="_blank" 
