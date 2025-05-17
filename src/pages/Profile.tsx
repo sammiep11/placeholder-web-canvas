@@ -5,7 +5,7 @@ import ProfileBlog from '../components/ProfileBlog';
 import FriendSpace from '../components/FriendSpace';
 import FriendComments from '../components/FriendComments';
 import ContactInfo from '../components/ContactInfo';
-import ProfileUrl from '../components/ProfileUrl';
+import MusicPlayer from '../components/MusicPlayer';
 import Interests from '../components/Interests';
 import RsvpDialog from '../components/RsvpDialog';
 import { Button } from '../components/ui/button';
@@ -58,7 +58,7 @@ const Profile = () => {
             </div>
             
             <ContactInfo />
-            <ProfileUrl />
+            <MusicPlayer />
             <Interests />
           </div>
         </div>

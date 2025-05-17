@@ -18,12 +18,12 @@ const ContactInfo = () => {
           <Link to="/photos" className="text-blue-700 hover:underline cursor-pointer">View/Add Photos</Link>
         </div>
 
-                {/* Party playlist link with Napster icon */}
+        {/* Party playlist link with Napster icon */}
         <div className="flex items-center gap-1">
           <img 
             src="/napster.svg" 
             alt="Napster" 
-            className="h-5 w-5 text-blue-600" 
+            className="h-5 w-5" 
             style={{ filter: 'invert(37%) sepia(74%) saturate(1228%) hue-rotate(199deg) brightness(95%) contrast(94%)' }}
           />
           <a 
@@ -64,10 +64,6 @@ const ContactInfo = () => {
             </PopoverContent>
           </Popover>
         </div>
-
-
-        
-        
       </div>
     </div>
   );
