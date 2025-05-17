@@ -25,7 +25,7 @@ const ContactInfo = () => {
         {/* Questions? link with popover and custom phone icon */}
         <div className="flex items-center gap-1">
           <img 
-            src="/phone2.svg" 
+            src="/phone.svg" 
             alt="Phone" 
             className="h-5 w-5 text-blue-600" 
             style={{ filter: 'invert(29%) sepia(93%) saturate(1752%) hue-rotate(209deg) brightness(97%) contrast(95%)' }}
