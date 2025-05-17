@@ -43,8 +43,8 @@ const ContactInfo = () => {
           <img 
             src="/napster.svg" 
             alt="Napster" 
-            className="h-5 w-5 text-green-500" 
-            style={{ filter: 'invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(90%) contrast(95%)' }}
+            className="h-5 w-5 text-blue-600" 
+            style={{ filter: 'invert(37%) sepia(74%) saturate(1228%) hue-rotate(199deg) brightness(95%) contrast(94%)' }}
           />
           <a 
             href="https://open.spotify.com/playlist/18ZtmLtuunIQSmCLWTbFC0?si=df8afae2d3a043d1" 
