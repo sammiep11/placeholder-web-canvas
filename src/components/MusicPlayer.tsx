@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { Progress } from './ui/progress';
 import { Slider } from './ui/slider';
 import { useToast } from '../hooks/use-toast';
+import { Alert, AlertDescription } from './ui/alert';
 
 const MusicPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -61,6 +62,42 @@ const MusicPlayer = () => {
     }
   };
 
+  const handleAudioError = (e: Event) => {
+    const audioElement = e.target as HTMLMediaElement;
+    const error = audioElement.error;
+    console.error("Audio loading error:", error);
+    
+    let errorMessage = "Failed to load audio";
+    
+    // More specific error messages based on error code
+    if (error) {
+      switch (error.code) {
+        case MediaError.MEDIA_ERR_ABORTED:
+          errorMessage = "Audio playback was aborted";
+          break;
+        case MediaError.MEDIA_ERR_NETWORK:
+          errorMessage = "Network error occurred while loading the audio";
+          break;
+        case MediaError.MEDIA_ERR_DECODE:
+          errorMessage = "Audio file is corrupted or uses an unsupported format";
+          break;
+        case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+          errorMessage = "Audio format is not supported by your browser";
+          break;
+        default:
+          errorMessage = `Error loading audio: ${error.message || "unknown error"}`;
+      }
+    }
+    
+    setIsLoading(false);
+    setLoadError(errorMessage);
+    toast({
+      title: "Audio Error",
+      description: errorMessage,
+      variant: "destructive"
+    });
+  };
+
   // Set initial volume and add event listeners
   useEffect(() => {
     console.log("MusicPlayer component mounted");
@@ -80,23 +117,10 @@ const MusicPlayer = () => {
         console.log("Audio metadata loaded");
         setIsLoading(false);
       };
-      
-      // Audio error handling
-      const handleError = (e: Event) => {
-        const error = (e.target as HTMLMediaElement).error;
-        console.error("Audio loading error:", error);
-        setIsLoading(false);
-        setLoadError(error?.message || "Failed to load audio");
-        toast({
-          title: "Audio Error",
-          description: `Could not load the audio file: ${error?.message || "Unknown error"}`,
-          variant: "destructive"
-        });
-      };
 
       audioRef.current.addEventListener('canplaythrough', handleCanPlayThrough);
       audioRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
-      audioRef.current.addEventListener('error', handleError);
+      audioRef.current.addEventListener('error', handleAudioError);
       audioRef.current.addEventListener('timeupdate', updateProgress);
       audioRef.current.addEventListener('ended', () => {
         console.log("Audio playback ended");
@@ -111,7 +135,7 @@ const MusicPlayer = () => {
         if (audioRef.current) {
           audioRef.current.removeEventListener('canplaythrough', handleCanPlayThrough);
           audioRef.current.removeEventListener('loadedmetadata', handleLoadedMetadata);
-          audioRef.current.removeEventListener('error', handleError);
+          audioRef.current.removeEventListener('error', handleAudioError);
           audioRef.current.removeEventListener('timeupdate', updateProgress);
           audioRef.current.removeEventListener('ended', () => {
             setIsPlaying(false);
@@ -138,17 +162,20 @@ const MusicPlayer = () => {
         )}
         
         {loadError && (
-          <div className="text-xs text-red-500 py-1">
-            {loadError}
-          </div>
+          <Alert variant="destructive" className="py-2">
+            <AlertDescription className="text-xs">
+              {loadError}
+            </AlertDescription>
+          </Alert>
         )}
         
-        <audio 
-          ref={audioRef} 
-          src="/party-song.mp3"
-          preload="auto"
-          crossOrigin="anonymous"
-        />
+        <audio ref={audioRef} preload="auto">
+          {/* Provide multiple source formats for better compatibility */}
+          <source src="/party-song.mp3" type="audio/mpeg" />
+          <source src="/party-song.ogg" type="audio/ogg" />
+          <source src="/party-song.wav" type="audio/wav" />
+          Your browser does not support the audio element.
+        </audio>
         
         <div className="flex items-center gap-2">
           <Button 
@@ -183,7 +210,7 @@ const MusicPlayer = () => {
         </div>
         
         <div className="text-xs text-gray-500 mt-1">
-          If audio doesn't load, try refreshing the page.
+          If audio doesn't load, try refreshing the page or check if your browser supports MP3, OGG, or WAV formats.
         </div>
       </div>
     </div>
