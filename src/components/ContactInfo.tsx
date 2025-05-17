@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Map, Phone } from 'lucide-react';
+import { Map } from 'lucide-react';
 import { Popover, PopoverTrigger, PopoverContent } from '../components/ui/popover';
 
 const ContactInfo = () => {
@@ -22,9 +22,14 @@ const ContactInfo = () => {
           </a>
         </div>
 
-        {/* New "Questions?" link with popover */}
+        {/* Questions? link with popover and custom phone icon */}
         <div className="flex items-center gap-1">
-          <Phone className="h-5 w-5 text-blue-600" />
+          <img 
+            src="/phone.svg" 
+            alt="Phone" 
+            className="h-5 w-5 text-blue-600" 
+            style={{ filter: 'invert(29%) sepia(93%) saturate(1752%) hue-rotate(209deg) brightness(97%) contrast(95%)' }}
+          />
           <Popover>
             <PopoverTrigger asChild>
               <span className="text-blue-700 hover:underline cursor-pointer">Questions?</span>
