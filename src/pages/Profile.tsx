@@ -50,7 +50,7 @@ const Profile = () => {
           </div>
           
           <div className="mb-6">
-            <div>Mood: </div>
+            <div>Mood: Ratchet</div>
             <div className="mb-2">View my: 
               <span className="text-blue-700 hover:underline cursor-pointer ml-1">Blog</span>
               <span> | </span>
