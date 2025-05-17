@@ -50,8 +50,20 @@ export function useAudioPlayer() {
   };
 
   const handleSourceError = (e: React.SyntheticEvent<HTMLSourceElement>) => {
-    console.log(`Source error for format: ${e.currentTarget.type}`);
-    // We don't set the error here as we want to try all sources first
+    const sourceElement = e.currentTarget;
+    console.log(`Source error for format: ${sourceElement.type}`);
+    console.log(`Attempted to load: ${sourceElement.src}`);
+    console.log(`Current pathname: ${window.location.pathname}`);
+    console.log(`Base URL: ${document.baseURI}`);
+    
+    // Check if file exists with fetch
+    fetch(sourceElement.src)
+      .then(response => {
+        console.log(`Fetch response for ${sourceElement.src}: status ${response.status}`);
+      })
+      .catch(err => {
+        console.error(`Fetch error for ${sourceElement.src}:`, err);
+      });
   };
 
   const handleAudioError = (e: Event) => {
@@ -75,8 +87,10 @@ export function useAudioPlayer() {
     if (audioRef.current) {
       const source = audioRef.current.querySelector('source[src="' + audioRef.current.currentSrc + '"]');
       if (source) {
-        setCurrentFormat(source.getAttribute('type') || null);
-        console.log("Successfully loaded format:", source.getAttribute('type'));
+        const format = source.getAttribute('type') || null;
+        setCurrentFormat(format);
+        console.log("Successfully loaded format:", format);
+        console.log("Source URL that worked:", audioRef.current.currentSrc);
       }
     }
     setIsLoading(false);
