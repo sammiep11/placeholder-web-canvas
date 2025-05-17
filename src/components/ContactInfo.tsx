@@ -15,7 +15,7 @@ const ContactInfo = () => {
             <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4V5h12v10z" clipRule="evenodd" />
             <path d="M8 7a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
           </svg>
-          <Link to="/photos" className="text-blue-700 hover:underline cursor-pointer">View/add Photos</Link>
+          <Link to="/photos" className="text-blue-700 hover:underline cursor-pointer">View/Add Photos</Link>
         </div>
 
                 {/* Party playlist link with Napster icon */}
