@@ -42,7 +42,7 @@ const MusicPlayer = () => {
           {SUPPORTED_FORMATS.map(format => (
             <source 
               key={format.type}
-              src={`/party-song.${format.extension}`} 
+              src={`${window.location.origin}/party-song.${format.extension}`} 
               type={format.type} 
               onError={handleSourceError} 
             />
