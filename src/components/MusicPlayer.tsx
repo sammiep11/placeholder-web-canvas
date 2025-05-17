@@ -64,7 +64,7 @@ const MusicPlayer = () => {
       <div className="spacehey-panel-header">Party Playlist</div>
       <div className="p-2 space-y-3">
         <div className="font-bold text-xs">
-          Now Playing: "Best Day Ever" - Party Mix
+          Now Playing: "In Da Club" - 50 Cent
         </div>
         <audio 
           ref={audioRef} 
@@ -101,10 +101,6 @@ const MusicPlayer = () => {
             onValueChange={handleVolumeChange}
             className="flex-1"
           />
-        </div>
-        
-        <div className="text-xs text-gray-500 mt-1">
-          Note: Upload your MP3 as "party-song.mp3" in the public folder
         </div>
       </div>
     </div>
