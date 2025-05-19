@@ -3,7 +3,7 @@ import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import AudioControls from './AudioControls';
 import AudioStatusDisplay from './AudioStatusDisplay';
 
-// ✅ Define the audio source outside the component to keep it stable
+// Define the audio source outside the component to keep it stable
 const sources = useMemo(() => [
   { src: '/test-audio.wav', type: 'audio/wav' }
 ], []);
@@ -12,7 +12,7 @@ const MusicPlayer = () => {
   const [songTitle] = useState('Test Audio');
   const [debugInfo, setDebugInfo] = useState<string | null>(null);
 
-  const {
+const {
     audioRef,
     isPlaying,
     progress,
