@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { useToast } from './use-toast';
 import { formatErrorMessage } from '../utils/audioUtils';
@@ -24,26 +23,25 @@ export function useAudioPlayer({ sources, songTitle }: UseAudioPlayerProps) {
 
   useEffect(() => {
     const audio = audioRef.current;
+
     if (!audio || sources.length === 0) {
       setLoadError("Audio element not available or no source provided");
       setIsLoading(false);
       return;
     }
-    
-    audio.volume = 1.0;
-    // Reset and load
-    audio.pause();
-    audio.src = '';
-    audio.removeAttribute('src');
 
     setIsLoading(true);
     setLoadError(null);
     setProgress(0);
 
+    // Set up audio source
+    audio.pause();
     audio.src = sources[0].src;
     audio.crossOrigin = "anonymous";
     audio.preload = "auto";
+    audio.volume = 1.0;
 
+    // Event listeners
     audio.oncanplaythrough = () => {
       setIsLoading(false);
       setCurrentFormat(sources[0].type);
@@ -69,7 +67,7 @@ export function useAudioPlayer({ sources, songTitle }: UseAudioPlayerProps) {
 
     audio.load();
 
-    // Optional fetch check for debug logging
+    // Optional fetch check for debug
     fetch(sources[0].src)
       .then(response => {
         if (!response.ok) throw new Error(`Status ${response.status}`);
@@ -84,6 +82,7 @@ export function useAudioPlayer({ sources, songTitle }: UseAudioPlayerProps) {
         setIsLoading(false);
       });
 
+    // Cleanup on unmount
     return () => {
       audio.pause();
       audio.src = '';
