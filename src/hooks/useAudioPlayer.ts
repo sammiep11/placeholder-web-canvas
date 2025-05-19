@@ -18,79 +18,44 @@ export function useAudioPlayer({ sources, songTitle }: UseAudioPlayerProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [currentFormat, setCurrentFormat] = useState<string | null>(null);
-  const [currentSourceIndex, setCurrentSourceIndex] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
 
   // Create audio element programmatically
   useEffect(() => {
-    console.log("Creating audio element programmatically");
+    console.log("Creating audio element for test file");
     
+    if (!sources || sources.length === 0) {
+      console.error("No audio sources provided");
+      setLoadError("No audio sources provided");
+      setIsLoading(false);
+      return;
+    }
+
     // Create audio element
     const audio = new Audio();
     audioRef.current = audio;
     
-    // Set up initial source
-    tryLoadSource(currentSourceIndex);
-
-    return () => {
-      if (audio) {
-        audio.pause();
-        audio.src = '';
-        audio.removeAttribute('src');
-      }
-    };
-  }, []);
-
-  const tryLoadSource = (sourceIndex: number) => {
-    if (sourceIndex >= sources.length) {
-      console.error("All audio sources failed");
-      setLoadError("No supported audio format found");
-      setIsLoading(false);
-      
-      // Show a toast for better user feedback
-      toast({
-        title: "Audio Error",
-        description: "Could not load audio in any format. Please try a different song.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (!audioRef.current) return;
-
-    const source = sources[sourceIndex];
-    console.log(`Trying to load source: ${source.src} (${source.type})`);
-    
-    // Clear previous handlers to avoid duplicates
-    const audio = audioRef.current;
-    audio.oncanplay = null;
-    audio.onerror = null;
-    audio.ontimeupdate = null;
-    audio.onended = null;
-    
-    // Set up new handlers
+    // Set up handlers
     audio.oncanplaythrough = () => {
-      console.log(`Source loaded successfully: ${source.src} (${source.type})`);
+      console.log("Audio can play through without buffering");
       setIsLoading(false);
       setLoadError(null);
-      setCurrentFormat(source.type);
+      setCurrentFormat(sources[0].type);
     };
     
     audio.onerror = (e) => {
       const error = audio.error;
-      console.error(`Error loading source: ${source.src} (${source.type})`, error);
+      console.error("Error loading audio:", error);
       
-      // Log more detailed error information
       if (error) {
         console.error(`Media error code: ${error.code}, message: ${error.message}`);
+        setLoadError(`Error loading audio: ${error.message || "unknown error"}`);
+      } else {
+        setLoadError("Failed to load audio");
       }
       
-      console.log(`Trying next source, index: ${sourceIndex + 1}`);
-      
-      // Try next source
-      setCurrentSourceIndex(prevIndex => prevIndex + 1);
-      tryLoadSource(sourceIndex + 1);
+      setIsLoading(false);
     };
     
     audio.ontimeupdate = () => {
@@ -105,23 +70,39 @@ export function useAudioPlayer({ sources, songTitle }: UseAudioPlayerProps) {
     };
     
     // Set source and attempt to load
-    audio.src = source.src;
+    audio.src = sources[0].src;
+    console.log(`Loading test audio from: ${sources[0].src}`);
     audio.load();
-  };
+
+    return () => {
+      if (audio) {
+        audio.pause();
+        audio.src = '';
+        audio.removeAttribute('src');
+      }
+    };
+  }, [sources]);
 
   // Toggle play/pause
   const togglePlayPause = () => {
-    if (!audioRef.current) return;
+    if (!audioRef.current) {
+      console.error("Audio element not initialized");
+      return;
+    }
     
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
+      console.log("Audio paused");
     } else {
       const playPromise = audioRef.current.play();
+      
+      console.log("Attempting to play audio...");
       
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
+            console.log("Audio playback started successfully");
             setIsPlaying(true);
           })
           .catch(err => {

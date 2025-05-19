@@ -5,9 +5,9 @@ import AudioControls from './AudioControls';
 import AudioStatusDisplay from './AudioStatusDisplay';
 
 const MusicPlayer = () => {
-  const [songTitle] = useState('"In Da Club" - 50 Cent');
+  const [songTitle] = useState('Test Audio');
   
-  // Include AAC format which is widely supported
+  // Use only the test audio file to simplify debugging
   const { 
     audioRef, 
     isPlaying, 
@@ -18,10 +18,7 @@ const MusicPlayer = () => {
     togglePlayPause
   } = useAudioPlayer({
     sources: [
-      { src: '/party-song.mp3', type: 'audio/mpeg' },
-      { src: '/party-song.m4a', type: 'audio/mp4' },  // AAC format
-      { src: '/party-song.ogg', type: 'audio/ogg' },
-      { src: '/party-song.wav', type: 'audio/wav' }
+      { src: '/test-audio.mp3', type: 'audio/mpeg' }
     ],
     songTitle
   });
