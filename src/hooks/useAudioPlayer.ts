@@ -29,7 +29,8 @@ export function useAudioPlayer({ sources, songTitle }: UseAudioPlayerProps) {
       setIsLoading(false);
       return;
     }
-
+    
+    audio.volume = 1.0;
     // Reset and load
     audio.pause();
     audio.src = '';
