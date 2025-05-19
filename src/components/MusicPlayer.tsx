@@ -100,7 +100,7 @@ const MusicPlayer = () => {
 
   return (
     <div className="spacehey-panel w-full">
-      <div className="spacehey-panel-header">Music Player</div>
+      <div className="spacehey-panel-header">Now Playing</div>
       <div className="p-2">
         <button className="text-xs cursor-pointer hover:underline mb-2" onClick={() => setShowPlaylist(!showPlaylist)}>
           {showPlaylist ? "Hide Playlist" : "Show Playlist"}
