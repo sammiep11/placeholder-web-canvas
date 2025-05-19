@@ -79,7 +79,7 @@ export function useAudioPlayer({ sources, songTitle }: UseAudioPlayerProps) {
     };
     
     // Set source and attempt to load
-    audio.src = sources[0].src;
+    audio.src = sources[0].src + "?t=" + new Date().getTime(); // Add cache busting parameter
     console.log(`Loading test audio from: ${sources[0].src}`);
     
     // Ensure CORS isn't an issue
@@ -97,7 +97,14 @@ export function useAudioPlayer({ sources, songTitle }: UseAudioPlayerProps) {
         if (!response.ok) {
           throw new Error(`File not found or not accessible (${response.status})`);
         }
-        return response;
+        console.log(`Audio file fetch successful: ${response.status}`);
+        return response.blob();
+      })
+      .then(blob => {
+        console.log(`Audio file blob size: ${blob.size} bytes, type: ${blob.type}`);
+        if (blob.size < 100) {
+          console.warn("Warning: Audio file is very small and might be invalid");
+        }
       })
       .catch(err => {
         console.error("Error fetching audio file:", err);

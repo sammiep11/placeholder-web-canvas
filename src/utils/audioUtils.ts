@@ -37,6 +37,9 @@ export const formatErrorMessage = (error: MediaError | null): string => {
     case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
       return "None of the audio formats are supported by your browser";
     default:
-      return `Error loading audio: ${error.message || "unknown error"}`;
+      if (error.message) {
+        return `Error loading audio: ${error.message}`;
+      }
+      return "Unknown audio error occurred";
   }
 };
