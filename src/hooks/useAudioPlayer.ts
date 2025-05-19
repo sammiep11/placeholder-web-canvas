@@ -40,7 +40,7 @@ export function useAudioPlayer({ sources, songTitle }: UseAudioPlayerProps) {
     setLoadError(null);
     setProgress(0);
 
-    audio.src = sources[0].src + "?t=" + new Date().getTime();
+    audio.src = sources[0].src;
     audio.crossOrigin = "anonymous";
     audio.preload = "auto";
 
