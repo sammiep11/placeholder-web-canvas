@@ -1,11 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import AudioControls from './AudioControls';
 import AudioStatusDisplay from './AudioStatusDisplay';
 
 const MusicPlayer = () => {
   const [songTitle] = useState('Test Audio');
+  const [debugInfo, setDebugInfo] = useState<string | null>(null);
   
   // Use only the test audio file to simplify debugging
   const { 
@@ -22,6 +23,24 @@ const MusicPlayer = () => {
     ],
     songTitle
   });
+  
+  // Display debug info in development
+  useEffect(() => {
+    const checkFileExists = async () => {
+      try {
+        const response = await fetch('/test-audio.mp3', { method: 'HEAD' });
+        if (response.ok) {
+          setDebugInfo(`File exists (status ${response.status})`);
+        } else {
+          setDebugInfo(`File not found (status ${response.status})`);
+        }
+      } catch (error) {
+        setDebugInfo(`Error checking file: ${error instanceof Error ? error.message : String(error)}`);
+      }
+    };
+    
+    checkFileExists();
+  }, []);
   
   return (
     <div className="spacehey-panel w-full mb-4">
@@ -42,6 +61,7 @@ const MusicPlayer = () => {
           isLoading={isLoading}
           error={loadError}
           currentFormat={currentFormat}
+          debugInfo={debugInfo}
         />
       </div>
     </div>

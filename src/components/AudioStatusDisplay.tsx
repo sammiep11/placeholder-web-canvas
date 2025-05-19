@@ -7,9 +7,10 @@ interface AudioStatusDisplayProps {
   isLoading: boolean;
   error: string | null;
   currentFormat: string | null;
+  debugInfo?: string | null;
 }
 
-const AudioStatusDisplay = ({ isLoading, error, currentFormat }: AudioStatusDisplayProps) => {
+const AudioStatusDisplay = ({ isLoading, error, currentFormat, debugInfo }: AudioStatusDisplayProps) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-start py-1">
@@ -28,19 +29,25 @@ const AudioStatusDisplay = ({ isLoading, error, currentFormat }: AudioStatusDisp
         <div className="text-xs text-gray-500">
           Please ensure audio files exist in the public folder.
         </div>
+        {debugInfo && (
+          <div className="text-xs text-blue-500 mt-1 p-1 bg-blue-50 rounded">
+            Debug: {debugInfo}
+          </div>
+        )}
       </div>
     );
   }
   
-  if (currentFormat) {
-    return (
-      <div className="text-xs text-gray-500">
-        Playing {getFormatDisplayName(currentFormat)}
-      </div>
-    );
-  }
-  
-  return null;
+  return (
+    <div className="text-xs text-gray-500">
+      {currentFormat ? `Playing ${getFormatDisplayName(currentFormat)}` : 'Ready'}
+      {debugInfo && (
+        <div className="text-xs text-blue-500 mt-1 p-1 bg-blue-50 rounded">
+          Debug: {debugInfo}
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default AudioStatusDisplay;

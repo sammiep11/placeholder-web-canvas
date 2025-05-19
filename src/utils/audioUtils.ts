@@ -22,6 +22,11 @@ export const getFormatDisplayName = (mimeType: string | null): string => {
 export const formatErrorMessage = (error: MediaError | null): string => {
   if (!error) return "Failed to load audio";
   
+  // Handle the specific FFmpeg demuxer error
+  if (error.message && error.message.includes("DEMUXER_ERROR_COULD_NOT_OPEN")) {
+    return "Audio file is invalid or corrupted. Please check that a valid audio file exists at the specified path.";
+  }
+  
   switch (error.code) {
     case MediaError.MEDIA_ERR_ABORTED:
       return "Audio playback was aborted";
@@ -35,4 +40,3 @@ export const formatErrorMessage = (error: MediaError | null): string => {
       return `Error loading audio: ${error.message || "unknown error"}`;
   }
 };
-

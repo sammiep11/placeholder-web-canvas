@@ -1,6 +1,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useToast } from './use-toast';
+import { formatErrorMessage } from '../utils/audioUtils';
 
 type AudioSource = {
   src: string;
@@ -32,6 +33,13 @@ export function useAudioPlayer({ sources, songTitle }: UseAudioPlayerProps) {
       return;
     }
 
+    // Cleanup existing audio if any
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = '';
+      audioRef.current.removeAttribute('src');
+    }
+
     // Create audio element
     const audio = new Audio();
     audioRef.current = audio;
@@ -49,8 +57,9 @@ export function useAudioPlayer({ sources, songTitle }: UseAudioPlayerProps) {
       console.error("Error loading audio:", error);
       
       if (error) {
-        console.error(`Media error code: ${error.code}, message: ${error.message}`);
-        setLoadError(`Error loading audio: ${error.message || "unknown error"}`);
+        const errorMsg = formatErrorMessage(error);
+        console.error(`Media error code: ${error.code}, message: ${error.message || errorMsg}`);
+        setLoadError(errorMsg);
       } else {
         setLoadError("Failed to load audio");
       }
@@ -72,7 +81,29 @@ export function useAudioPlayer({ sources, songTitle }: UseAudioPlayerProps) {
     // Set source and attempt to load
     audio.src = sources[0].src;
     console.log(`Loading test audio from: ${sources[0].src}`);
+    
+    // Ensure CORS isn't an issue
+    audio.crossOrigin = "anonymous";
+    
+    // Force preload
+    audio.preload = "auto";
+    
+    // Attempt to load the audio file
     audio.load();
+
+    // Make an additional check to see if the file exists
+    fetch(sources[0].src)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`File not found or not accessible (${response.status})`);
+        }
+        return response;
+      })
+      .catch(err => {
+        console.error("Error fetching audio file:", err);
+        setLoadError(`Audio file not found or inaccessible: ${err.message}`);
+        setIsLoading(false);
+      });
 
     return () => {
       if (audio) {
