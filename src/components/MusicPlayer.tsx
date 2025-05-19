@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Slider } from "@/components/ui/slider";
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Upload } from 'lucide-react';
@@ -152,5 +153,4 @@ const MusicPlayer = () => {
 };
 
 export default MusicPlayer;
-
 
