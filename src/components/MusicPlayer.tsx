@@ -44,6 +44,8 @@ const MusicPlayer = () => {
   
   return (
     <div className="spacehey-panel w-full mb-4">
+      {/* Step 1: Inject the audio element into the DOM */}
+      <audio ref={audioRef} hidden />
       <div className="spacehey-panel-header">Now Playing</div>
       <div className="p-2 space-y-2">
         <div className="font-bold text-sm">
