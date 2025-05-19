@@ -21,7 +21,7 @@ const {
   togglePlayPause,
 } = useAudioPlayer({
   sources: [
-    { src: '/test-audio.mp3', type: 'audio/mpeg' } // use .wav if preferred, but .mp3 is better
+    { src: '/test-audio.wav', type: 'audio/wav' } // use .wav if preferred, but .mp3 is better
   ],
   songTitle: 'Test Audio'
 });
