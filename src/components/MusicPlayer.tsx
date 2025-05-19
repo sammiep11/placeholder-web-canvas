@@ -8,9 +8,9 @@ import { toast } from "@/components/ui/use-toast";
 const defaultPlaylist = [
   {
     id: 1,
-    title: "2000s Birthday Mix",
-    artist: "Various Artists",
-    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+    title: "In Da Club",
+    artist: "50 Cent",
+    src: "public/In Da Club.mp3"
   },
   {
     id: 2,
