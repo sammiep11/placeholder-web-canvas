@@ -28,7 +28,7 @@ const MusicPlayer = () => {
   useEffect(() => {
     const checkFileExists = async () => {
       try {
-        const response = await fetch('/test-audio.mp3', { method: 'HEAD' });
+        const response = await fetch('/test-audio.wav', { method: 'HEAD' });
         if (response.ok) {
           setDebugInfo(`File exists (status ${response.status})`);
         } else {
