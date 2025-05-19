@@ -67,21 +67,8 @@ export function useAudioPlayer({ sources, songTitle }: UseAudioPlayerProps) {
 
     audio.load();
 
-    // Optional fetch check for debug
-    fetch(sources[0].src)
-      .then(response => {
-        if (!response.ok) throw new Error(`Status ${response.status}`);
-        return response.blob();
-      })
-      .then(blob => {
-        if (blob.size < 100) console.warn("Audio file might be empty");
-      })
-      .catch(err => {
-        console.error("Error fetching audio file:", err);
-        setLoadError(`Audio file not accessible: ${err.message}`);
-        setIsLoading(false);
-      });
 
+    
     // Cleanup on unmount
     return () => {
       audio.pause();
