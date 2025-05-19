@@ -22,140 +22,103 @@ export function useAudioPlayer({ sources, songTitle }: UseAudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
 
-  // Create audio element programmatically
   useEffect(() => {
-    console.log("Creating audio element for test file");
-    
-    if (!sources || sources.length === 0) {
-      console.error("No audio sources provided");
-      setLoadError("No audio sources provided");
+    const audio = audioRef.current;
+    if (!audio || sources.length === 0) {
+      setLoadError("Audio element not available or no source provided");
       setIsLoading(false);
       return;
     }
 
-    // Cleanup existing audio if any
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.src = '';
-      audioRef.current.removeAttribute('src');
-    }
+    // Reset and load
+    audio.pause();
+    audio.src = '';
+    audio.removeAttribute('src');
 
-    // Create audio element
-    const audio = new Audio();
-    audioRef.current = audio;
-    
-    // Set up handlers
+    setIsLoading(true);
+    setLoadError(null);
+    setProgress(0);
+
+    audio.src = sources[0].src + "?t=" + new Date().getTime();
+    audio.crossOrigin = "anonymous";
+    audio.preload = "auto";
+
     audio.oncanplaythrough = () => {
-      console.log("Audio can play through without buffering");
       setIsLoading(false);
-      setLoadError(null);
       setCurrentFormat(sources[0].type);
     };
-    
-    audio.onerror = (e) => {
+
+    audio.onerror = () => {
       const error = audio.error;
-      console.error("Error loading audio:", error);
-      
-      if (error) {
-        const errorMsg = formatErrorMessage(error);
-        console.error(`Media error code: ${error.code}, message: ${error.message || errorMsg}`);
-        setLoadError(errorMsg);
-      } else {
-        setLoadError("Failed to load audio");
-      }
-      
+      const errorMsg = error ? formatErrorMessage(error) : "Failed to load audio";
+      setLoadError(errorMsg);
       setIsLoading(false);
     };
-    
+
     audio.ontimeupdate = () => {
       const currentTime = audio.currentTime;
       const duration = audio.duration || 1;
       setProgress((currentTime / duration) * 100);
     };
-    
+
     audio.onended = () => {
       setIsPlaying(false);
       setProgress(0);
     };
-    
-    // Set source and attempt to load
-    audio.src = sources[0].src + "?t=" + new Date().getTime(); // Add cache busting parameter
-    console.log(`Loading test audio from: ${sources[0].src}`);
-    
-    // Ensure CORS isn't an issue
-    audio.crossOrigin = "anonymous";
-    
-    // Force preload
-    audio.preload = "auto";
-    
-    // Attempt to load the audio file
+
     audio.load();
 
-    // Make an additional check to see if the file exists
+    // Optional fetch check for debug logging
     fetch(sources[0].src)
       .then(response => {
-        if (!response.ok) {
-          throw new Error(`File not found or not accessible (${response.status})`);
-        }
-        console.log(`Audio file fetch successful: ${response.status}`);
+        if (!response.ok) throw new Error(`Status ${response.status}`);
         return response.blob();
       })
       .then(blob => {
-        console.log(`Audio file blob size: ${blob.size} bytes, type: ${blob.type}`);
-        if (blob.size < 100) {
-          console.warn("Warning: Audio file is very small and might be invalid");
-        }
+        if (blob.size < 100) console.warn("Audio file might be empty");
       })
       .catch(err => {
         console.error("Error fetching audio file:", err);
-        setLoadError(`Audio file not found or inaccessible: ${err.message}`);
+        setLoadError(`Audio file not accessible: ${err.message}`);
         setIsLoading(false);
       });
 
     return () => {
-      if (audio) {
-        audio.pause();
-        audio.src = '';
-        audio.removeAttribute('src');
-      }
+      audio.pause();
+      audio.src = '';
+      audio.removeAttribute('src');
     };
   }, [sources]);
 
-  // Toggle play/pause
   const togglePlayPause = () => {
-    if (!audioRef.current) {
-      console.error("Audio element not initialized");
+    const audio = audioRef.current;
+    if (!audio) {
+      console.error("Audio ref not attached");
       return;
     }
-    
+
     if (isPlaying) {
-      audioRef.current.pause();
+      audio.pause();
       setIsPlaying(false);
-      console.log("Audio paused");
     } else {
-      const playPromise = audioRef.current.play();
-      
-      console.log("Attempting to play audio...");
-      
+      const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
-            console.log("Audio playback started successfully");
             setIsPlaying(true);
           })
           .catch(err => {
-            console.error('Error playing audio:', err);
-            
+            console.error("Playback error:", err);
             if (err.name === "NotAllowedError") {
               toast({
                 title: "Autoplay Blocked",
-                description: "Browser requires user interaction to play audio. Click play again.",
+                description: "Click play to start the music.",
                 variant: "destructive"
               });
             } else {
               toast({
                 title: "Playback Error",
-                description: `Could not play ${songTitle}. Try again.`,
+                description: `Couldn't play ${songTitle}.`,
                 variant: "destructive"
               });
             }
@@ -164,7 +127,6 @@ export function useAudioPlayer({ sources, songTitle }: UseAudioPlayerProps) {
     }
   };
 
-  // Expose the API
   return {
     audioRef,
     isPlaying,
