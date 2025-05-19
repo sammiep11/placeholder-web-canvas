@@ -1,18 +1,17 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import AudioControls from './AudioControls';
 import AudioStatusDisplay from './AudioStatusDisplay';
+
+// ✅ Define the audio source outside the component to keep it stable
+const AUDIO_SOURCES = [
+  { src: '/test-audio.wav', type: 'audio/wav' } // or .mp3 with audio/mpeg
+];
 
 const MusicPlayer = () => {
   const [songTitle] = useState('Test Audio');
   const [debugInfo, setDebugInfo] = useState<string | null>(null);
 
-  // ✅ Memoize sources to prevent re-renders
-  const sources = useMemo(() => [
-    { src: '/test-audio.wav', type: 'audio/wav' } // or use 'audio/mpeg' with .mp3
-  ], []);
-
-  // ✅ Use custom audio player hook
   const {
     audioRef,
     isPlaying,
@@ -22,15 +21,15 @@ const MusicPlayer = () => {
     currentFormat,
     togglePlayPause
   } = useAudioPlayer({
-    sources,
+    sources: AUDIO_SOURCES,
     songTitle
   });
 
-  // ✅ Optional: Debug check to confirm file exists
+  // ✅ Debug check to confirm file exists (runs only once)
   useEffect(() => {
     const checkFileExists = async () => {
       try {
-        const response = await fetch(sources[0].src, { method: 'HEAD' });
+        const response = await fetch(AUDIO_SOURCES[0].src, { method: 'HEAD' });
         if (response.ok) {
           setDebugInfo(`File exists (status ${response.status})`);
         } else {
@@ -42,27 +41,25 @@ const MusicPlayer = () => {
     };
 
     checkFileExists();
-  }, [sources]);
+  }, []); // run only once
 
   return (
     <div className="spacehey-panel w-full mb-4">
-      {/* ✅ DOM-connected audio element */}
+      {/* ✅ The actual audio element connected to the player logic */}
       <audio ref={audioRef} hidden />
 
       <div className="spacehey-panel-header">Now Playing</div>
       <div className="p-2 space-y-2">
-        <div className="font-bold text-sm">
-          {songTitle}
-        </div>
+        <div className="font-bold text-sm">{songTitle}</div>
 
-        <AudioControls 
+        <AudioControls
           isPlaying={isPlaying}
           isDisabled={isLoading || !!loadError}
           progress={progress}
           onTogglePlayPause={togglePlayPause}
         />
 
-        <AudioStatusDisplay 
+        <AudioStatusDisplay
           isLoading={isLoading}
           error={loadError}
           currentFormat={currentFormat}
@@ -74,4 +71,5 @@ const MusicPlayer = () => {
 };
 
 export default MusicPlayer;
+
 
