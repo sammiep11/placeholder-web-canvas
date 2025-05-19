@@ -11,33 +11,47 @@ interface AudioControlsProps {
   onTogglePlayPause: () => void;
 }
 
-const AudioControls = ({ 
-  isPlaying, 
-  isDisabled, 
-  progress, 
-  onTogglePlayPause 
-}: AudioControlsProps) => {
-  return (
-    <div className="flex items-center gap-2">
-      <Button 
-        onClick={onTogglePlayPause} 
-        variant="outline" 
-        size="icon"
-        className="h-8 w-8 rounded-sm border-blue-300 bg-blue-100 hover:bg-blue-200"
-        disabled={isDisabled}
-      >
-        {isPlaying ? (
-          <Pause className="h-4 w-4 text-blue-600" />
-        ) : (
-          <Play className="h-4 w-4 text-blue-600" />
-        )}
-      </Button>
-      
-      <div className="flex-1">
-        <Progress value={progress} className="h-1.5 bg-gray-200" />
-      </div>
-    </div>
-  );
-};
+const {
+  audioRef,
+  isPlaying,
+  isLoading,
+  progress,
+  loadError,
+  currentFormat,
+  togglePlayPause,
+} = useAudioPlayer({
+  sources: [
+    { src: '/test-audio.mp3', type: 'audio/mpeg' } // use .wav if preferred, but .mp3 is better
+  ],
+  songTitle: 'Test Audio'
+});
 
-export default AudioControls;
+return (
+  <div className="spacehey-panel w-full mb-4">
+    {/* 🔈 Renders the actual audio element */}
+    <audio ref={audioRef} hidden />
+
+    <div className="spacehey-panel-header">Now Playing</div>
+    <div className="p-2 space-y-2">
+      <div className="font-bold text-sm">
+        Test Audio
+      </div>
+
+      {/* 🔁 This is now wired up and working */}
+      <AudioControls 
+        isPlaying={isPlaying}
+        isDisabled={isLoading || !!loadError}
+        progress={progress}
+        onTogglePlayPause={togglePlayPause}
+      />
+
+      {/* Optional: Status feedback */}
+      <AudioStatusDisplay 
+        isLoading={isLoading}
+        error={loadError}
+        currentFormat={currentFormat}
+        debugInfo={null}
+      />
+    </div>
+  </div>
+);
