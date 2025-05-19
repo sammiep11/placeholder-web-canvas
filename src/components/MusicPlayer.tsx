@@ -12,7 +12,7 @@ const MusicPlayer = () => {
   const [songTitle] = useState('Test Audio');
   const [debugInfo, setDebugInfo] = useState<string | null>(null);
 
-const {
+  const {
     audioRef,
     isPlaying,
     progress,
@@ -71,5 +71,8 @@ const {
 };
 
 export default MusicPlayer;
+
+
+
 
 
