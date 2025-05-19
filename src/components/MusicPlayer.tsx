@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Slider } from "@/components/ui/slider";
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Upload } from 'lucide-react';
@@ -100,42 +99,42 @@ const MusicPlayer = () => {
   };
 
   return (
-    <div className="myspace-box">
-      <div className="myspace-header flex justify-between items-center">
-        <h3 className="text-sm">Music Player</h3>
-        <button className="text-xs cursor-pointer hover:underline" onClick={() => setShowPlaylist(!showPlaylist)}>
+    <div className="spacehey-panel w-full">
+      <div className="spacehey-panel-header">Music Player</div>
+      <div className="p-2">
+        <button className="text-xs cursor-pointer hover:underline mb-2" onClick={() => setShowPlaylist(!showPlaylist)}>
           {showPlaylist ? "Hide Playlist" : "Show Playlist"}
         </button>
-      </div>
 
-      <div className="p-2 bg-[#EFEFEF] border border-gray-400 mt-2">
-        <div className="flex items-center justify-around my-2 bg-gray-700 text-white p-1 border border-black">
-          <button onClick={handlePrevious}><SkipBack size={16} /></button>
-          <button onClick={togglePlayPause}>
-            {isPlaying ? <Pause size={16} /> : <Play size={16} />}
-          </button>
-          <button onClick={handleNext}><SkipForward size={16} /></button>
-          <div className="text-xs ml-2 max-w-[150px]">
-            <div>{currentSong?.title}</div>
-            <div>{currentSong?.artist}</div>
-            <div className="text-[10px] mt-1">
-              {formatTime(currentTime)} / {formatTime(duration)}
+        <div className="bg-[#EFEFEF] border border-gray-400">
+          <div className="flex items-center justify-around my-2 bg-gray-700 text-white p-1 border border-black">
+            <button onClick={handlePrevious}><SkipBack size={16} /></button>
+            <button onClick={togglePlayPause}>
+              {isPlaying ? <Pause size={16} /> : <Play size={16} />}
+            </button>
+            <button onClick={handleNext}><SkipForward size={16} /></button>
+            <div className="text-xs ml-2 max-w-[150px]">
+              <div>{currentSong?.title}</div>
+              <div>{currentSong?.artist}</div>
+              <div className="text-[10px] mt-1">
+                {formatTime(currentTime)} / {formatTime(duration)}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="flex items-center space-x-2 mt-2">
-          <button onClick={toggleMute}>
-            {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-          </button>
-          <Slider
-            defaultValue={[volume]}
-            max={100}
-            step={1}
-            value={[isMuted ? 0 : volume]}
-            onValueChange={handleVolumeChange}
-            className="w-full"
-          />
+          <div className="flex items-center space-x-2 mt-2 p-2">
+            <button onClick={toggleMute}>
+              {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+            </button>
+            <Slider
+              defaultValue={[volume]}
+              max={100}
+              step={1}
+              value={[isMuted ? 0 : volume]}
+              onValueChange={handleVolumeChange}
+              className="w-full"
+            />
+          </div>
         </div>
       </div>
 
@@ -153,4 +152,3 @@ const MusicPlayer = () => {
 };
 
 export default MusicPlayer;
-
