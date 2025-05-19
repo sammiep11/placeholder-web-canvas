@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import AudioControls from './AudioControls';
 import AudioStatusDisplay from './AudioStatusDisplay';
 
 // ✅ Define the audio source outside the component to keep it stable
-const AUDIO_SOURCES = [
-  { src: '/test-audio.wav', type: 'audio/wav' } // or .mp3 with audio/mpeg
-];
+const sources = useMemo(() => [
+  { src: '/test-audio.wav', type: 'audio/wav' }
+], []);
 
 const MusicPlayer = () => {
   const [songTitle] = useState('Test Audio');
