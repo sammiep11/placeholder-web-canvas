@@ -99,9 +99,10 @@ const MusicPlayer = () => {
   };
 
   return (
-    <div className="myspace-box">
-      <div className="myspace-header flex justify-between items-center">
-        <h3 className="text-sm">Music Player</h3>
+    <div className="mb-4">
+      <div className="spacehey-section-header mb-1">
+        Music
+      </div>
         <button className="text-xs cursor-pointer hover:underline" onClick={() => setShowPlaylist(!showPlaylist)}>
           {showPlaylist ? "Hide Playlist" : "Show Playlist"}
         </button>
