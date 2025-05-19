@@ -18,9 +18,10 @@ const MusicPlayer = () => {
     currentFormat,
     togglePlayPause
   } = useAudioPlayer({
-    sources: [
-      { src: '/test-audio.wav', type: 'audio/wav' }
-    ],
+    sources = useMemo(() => [
+  { src: '/test-audio.wav', type: 'audio/wav' }
+], []);
+    const { ... } = useAudioPlayer({ sources, songTitle: 'Test Audio' });
     songTitle
   });
   
