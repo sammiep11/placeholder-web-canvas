@@ -20,7 +20,7 @@ const MusicPlayer = () => {
   } = useAudioPlayer({
     sources = useMemo(() => [
   { src: '/test-audio.wav', type: 'audio/wav' }
-], []);
+], [])
     const { ... } = useAudioPlayer({ sources, songTitle: 'Test Audio' });
     songTitle
   });
