@@ -10,7 +10,7 @@ const defaultPlaylist = [
     id: 1,
     title: "In Da Club",
     artist: "50 Cent",
-    src: "public/In-Da-Club.mp3"
+    src: "https://sammiep11.github.io/placeholder-web-canvas/In-Da-Club.mp3"
   },
   {
     id: 2,
