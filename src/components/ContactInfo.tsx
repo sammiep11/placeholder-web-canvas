@@ -23,7 +23,7 @@ const ContactInfo = () => {
           <img 
             src="/napster.svg" 
             alt="Napster" 
-            className="h-5 w-5" 
+            className="h-5 w-5 text-blue-600" 
             style={{ filter: 'invert(37%) sepia(74%) saturate(1228%) hue-rotate(199deg) brightness(95%) contrast(94%)' }}
           />
           <a 
