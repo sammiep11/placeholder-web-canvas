@@ -57,6 +57,15 @@ const MusicPlayer = () => {
   }
 }, [currentSongIndex]);
 
+  useEffect(() => {
+  const audio = audioRef.current;
+  if (audio) {
+    audio.pause(); // stop previous track
+    audio.currentTime = 0;
+  }
+  setCurrentTime(0);
+}, [currentSongIndex]);
+
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -68,18 +77,26 @@ const MusicPlayer = () => {
   const togglePlayPause = () => {
     const audio = audioRef.current;
     if (!audio) return;
+  
     if (isPlaying) {
       audio.pause();
+      setIsPlaying(false);
     } else {
-      audio.play().catch(error => {
-        console.error("Error playing audio:", error);
-        toast({
-          title: "Playback Error",
-          description: "There was a problem playing this track.",
-          variant: "destructive"
-        });
-      });
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => setIsPlaying(true))
+          .catch((error) => {
+            console.error("Playback Error:", error);
+            toast({
+              title: "Playback Error",
+              description: "Click play again or interact with the page.",
+              variant: "destructive"
+            });
+          });
+      }
     }
+  };
     setIsPlaying(!isPlaying);
   };
 
