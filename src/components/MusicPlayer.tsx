@@ -44,6 +44,15 @@ const MusicPlayer = () => {
     if (audio) {
       audio.pause();
       audio.currentTime = 0;
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => setIsPlaying(true))
+          .catch((error) => {
+            console.error("Autoplay blocked:", error);
+            // Don't show toast on first load, it's expected
+          });
+      }
     }
     setCurrentTime(0);
   }, [currentSongIndex]);
