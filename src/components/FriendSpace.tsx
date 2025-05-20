@@ -11,7 +11,7 @@ const FriendSpace = () => {
     { name: "Roche", imgSrc: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6", verified: true },
     { name: "Cattan", imgSrc: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d", verified: true },
     { name: "D", imgSrc: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158", verified: true },
-    { name: "Sammie", imgSrc: "/sammie.jpg", verified: true },
+    { name: "Sammie", imgSrc: "/sammie2.jpg", verified: true },
     { name: "Mark", imgSrc: "/mark.jpg", verified: true }
   ];
 
