@@ -59,7 +59,7 @@ const ContactInfo = () => {
             <PopoverContent className="w-80">
               <div className="space-y-2">
                 <h4 className="font-medium text-sm">Have questions about the party?</h4>
-                <p className="text-sm">Text Haneda at <span className="font-medium">+1 (555) 123-4567</span> with any questions!</p>
+                <p className="text-sm">Text Haneda at <span className="font-medium">+1 (408) 627-1741</span> with any questions!</p>
               </div>
             </PopoverContent>
           </Popover>
