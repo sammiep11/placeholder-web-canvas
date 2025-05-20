@@ -40,19 +40,21 @@ const MusicPlayer = () => {
   const currentSong = playlist[currentSongIndex];
 
   useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    if (isPlaying) {
-      audio.play().catch(err => {
-        console.error('Playback error:', err);
-        toast({
-          title: 'Playback Error',
-          description: 'There was a problem playing this track.',
-          variant: 'destructive'
-        });
+  const audio = audioRef.current;
+  if (!audio) return;
+
+  audio.load(); // ensure it reloads the new track
+  if (isPlaying) {
+    audio.play().catch(err => {
+      console.error('Playback error:', err);
+      toast({
+        title: 'Playback Error',
+        description: 'There was a problem playing this track.',
+        variant: 'destructive'
       });
-    }
-  }, [currentSongIndex, isPlaying]);
+    });
+  }
+}, [currentSongIndex]);
 
 
   useEffect(() => {
