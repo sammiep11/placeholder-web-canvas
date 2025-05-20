@@ -24,7 +24,7 @@ const Profile = () => {
           onClick={() => setIsRsvpDialogOpen(true)}
           className="bg-pink-500 hover:bg-pink-600 text-white font-bold w-full sm:w-auto"
         >
-          RSVP to Jonny's Party!
+          RSVP to Jonny's *$URPRiSE* Party!
         </Button>
       </div>
       
