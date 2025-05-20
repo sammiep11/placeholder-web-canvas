@@ -7,10 +7,10 @@ const FriendSpace = () => {
   const friends = [
     { name: "Tom", imgSrc: "/tom.jpeg", verified: true },
     { name: "Haneda", imgSrc: "/haneda2.jpg", verified: true },
-    { name: "Liam", imgSrc: "https://images.unsplash.com/photo-1518770660439-4636190af475", verified: true },
+    { name: "Liam", imgSrc: "/liam.jpg", verified: true },
     { name: "Roche", imgSrc: "/roche.jpg", verified: true },
     { name: "Cattan", imgSrc: "/cattan.jpg", verified: true },
-    { name: "D", imgSrc: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158", verified: true },
+    { name: "D", imgSrc: "/d.jpg", verified: true },
     { name: "Sammie", imgSrc: "/sammie2.jpg", verified: true },
     { name: "Mark", imgSrc: "/mark.jpg", verified: true }
   ];
