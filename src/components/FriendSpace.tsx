@@ -6,7 +6,7 @@ const FriendSpace = () => {
 
   const friends = [
     { name: "Tom", imgSrc: "/tom.jpeg", verified: true },
-    { name: "Haneda", imgSrc: "/haneda.jpg", verified: true },
+    { name: "Haneda", imgSrc: "/haneda2.jpg", verified: true },
     { name: "Liam", imgSrc: "https://images.unsplash.com/photo-1518770660439-4636190af475", verified: true },
     { name: "Roche", imgSrc: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6", verified: true },
     { name: "Cattan", imgSrc: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d", verified: true },
