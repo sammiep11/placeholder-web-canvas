@@ -8,7 +8,7 @@ const FriendSpace = () => {
     { name: "Tom", imgSrc: "/tom.jpeg", verified: true },
     { name: "Haneda", imgSrc: "/haneda2.jpg", verified: true },
     { name: "Liam", imgSrc: "https://images.unsplash.com/photo-1518770660439-4636190af475", verified: true },
-    { name: "Roche", imgSrc: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6", verified: true },
+    { name: "Roche", imgSrc: "/roche.jpg", verified: true },
     { name: "Cattan", imgSrc: "/cattan.jpg", verified: true },
     { name: "D", imgSrc: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158", verified: true },
     { name: "Sammie", imgSrc: "/sammie2.jpg", verified: true },
