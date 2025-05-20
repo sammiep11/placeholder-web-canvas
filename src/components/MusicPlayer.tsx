@@ -11,7 +11,6 @@ const defaultPlaylist = [
     title: "In Da Club",
     artist: "50 Cent",
     src: "https://sammiep11.github.io/placeholder-web-canvas/In-Da-Club.mp3"
-    
   },
   {
     id: 2,
@@ -41,31 +40,13 @@ const MusicPlayer = () => {
   const currentSong = playlist[currentSongIndex];
 
   useEffect(() => {
-  const audio = audioRef.current;
-  if (!audio) return;
-
-  audio.load(); // ensure it reloads the new track
-  if (isPlaying) {
-    audio.play().catch(err => {
-      console.error('Playback error:', err);
-      toast({
-        title: 'Playback Error',
-        description: 'There was a problem playing this track.',
-        variant: 'destructive'
-      });
-    });
-  }
-}, [currentSongIndex]);
-
-  useEffect(() => {
-  const audio = audioRef.current;
-  if (audio) {
-    audio.pause(); // stop previous track
-    audio.currentTime = 0;
-  }
-  setCurrentTime(0);
-}, [currentSongIndex]);
-
+    const audio = audioRef.current;
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+    setCurrentTime(0);
+  }, [currentSongIndex]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -77,7 +58,7 @@ const MusicPlayer = () => {
   const togglePlayPause = () => {
     const audio = audioRef.current;
     if (!audio) return;
-  
+
     if (isPlaying) {
       audio.pause();
       setIsPlaying(false);
@@ -96,8 +77,6 @@ const MusicPlayer = () => {
           });
       }
     }
-  };
-    setIsPlaying(!isPlaying);
   };
 
   const handlePrevious = () => {
@@ -163,17 +142,17 @@ const MusicPlayer = () => {
         </div>
       </div>
 
-    <audio
-      ref={audioRef}
-      src={`${currentSong?.src}?v=${Date.now()}`} // cache-buster
-      onTimeUpdate={() => {
-        const audio = audioRef.current;
-        if (audio) setCurrentTime(audio.currentTime);
-      }}
-      onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
-      onEnded={handleNext}
-/>
-
+      <audio
+        ref={audioRef}
+        preload="metadata"
+        src={currentSong?.src}
+        onTimeUpdate={() => {
+          const audio = audioRef.current;
+          if (audio) setCurrentTime(audio.currentTime);
+        }}
+        onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
+        onEnded={handleNext}
+      />
     </div>
   );
 };
