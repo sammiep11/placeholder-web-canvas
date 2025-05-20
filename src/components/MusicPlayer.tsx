@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Slider } from "@/components/ui/slider";
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Upload } from 'lucide-react';
@@ -44,15 +45,7 @@ const MusicPlayer = () => {
     if (audio) {
       audio.pause();
       audio.currentTime = 0;
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => setIsPlaying(true))
-          .catch((error) => {
-            console.error("Autoplay blocked:", error);
-            // Don't show toast on first load, it's expected
-          });
-      }
+      // Removed autoplay - no longer automatically playing when song changes
     }
     setCurrentTime(0);
   }, [currentSongIndex]);
@@ -90,12 +83,12 @@ const MusicPlayer = () => {
 
   const handlePrevious = () => {
     setCurrentSongIndex(prev => (prev === 0 ? playlist.length - 1 : prev - 1));
-    setIsPlaying(true);
+    setIsPlaying(false); // Changed to not auto-play when switching songs
   };
 
   const handleNext = () => {
     setCurrentSongIndex(prev => (prev === playlist.length - 1 ? 0 : prev + 1));
-    setIsPlaying(true);
+    setIsPlaying(false); // Changed to not auto-play when switching songs
   };
 
   const toggleMute = () => {
@@ -160,7 +153,7 @@ const MusicPlayer = () => {
           if (audio) setCurrentTime(audio.currentTime);
         }}
         onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
-        onEnded={handleNext}
+        onEnded={() => setIsPlaying(false)} // Modified to not automatically play next song
       />
     </div>
   );
