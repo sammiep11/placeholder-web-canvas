@@ -42,10 +42,18 @@ const MusicPlayer = () => {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    audio.src = currentSong?.src || '';
-    audio.load();
-    if (isPlaying) audio.play();
-  }, [currentSongIndex]);
+    if (isPlaying) {
+      audio.play().catch(err => {
+        console.error('Playback error:', err);
+        toast({
+          title: 'Playback Error',
+          description: 'There was a problem playing this track.',
+          variant: 'destructive'
+        });
+      });
+    }
+  }, [currentSongIndex, isPlaying]);
+
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -135,15 +143,17 @@ const MusicPlayer = () => {
         </div>
       </div>
 
-      <audio
-        ref={audioRef}
-        onTimeUpdate={() => {
-          const audio = audioRef.current;
-          if (audio) setCurrentTime(audio.currentTime);
-        }}
-        onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
-        onEnded={handleNext}
-      />
+    <audio
+      ref={audioRef}
+      src={`${currentSong?.src}?v=${Date.now()}`} // cache-buster
+      onTimeUpdate={() => {
+        const audio = audioRef.current;
+        if (audio) setCurrentTime(audio.currentTime);
+      }}
+      onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
+      onEnded={handleNext}
+/>
+
     </div>
   );
 };
