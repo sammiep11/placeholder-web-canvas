@@ -44,7 +44,7 @@ const FriendSpace = () => {
     },
     {
       name: "Mark",
-      imgSrc: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5",
+      imgSrc: "/mark.jpg",
       verified: true
     }
   ];
