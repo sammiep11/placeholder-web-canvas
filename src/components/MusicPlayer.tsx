@@ -102,9 +102,6 @@ const MusicPlayer = () => {
     <div className="spacehey-panel w-full">
       <div className="spacehey-panel-header">Now Playing</div>
       <div className="p-2">
-        <button className="text-xs cursor-pointer hover:underline mb-2" onClick={() => setShowPlaylist(!showPlaylist)}>
-          {showPlaylist ? "Hide Playlist" : "Show Playlist"}
-        </button>
 
         <div className="bg-[#EFEFEF] border border-gray-400">
           <div className="flex items-center justify-around my-2 bg-gray-700 text-white p-1 border border-black">
