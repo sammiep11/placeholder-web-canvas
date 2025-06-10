@@ -22,8 +22,8 @@ const initialPhotos: Photo[] = [
   },
   {
     id: "insp-3",
-    src: "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92",
-    caption: "DJ booth setup inspiration",
+    src: "7adcc59c1249da409af5feb789ddd811.jpg",
+    caption: "",
     uploadedBy: "Admin",
     date: new Date("2023-04-15").toISOString(),
     album: "inspiration"
