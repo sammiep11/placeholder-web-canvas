@@ -22,7 +22,7 @@ const initialPhotos: Photo[] = [
   },
   {
     id: "insp-3",
-    src: "7adcc59c1249da409af5feb789ddd811.jpg",
+    src: "/7adcc59c1249da409af5feb789ddd811.jpg",
     caption: "",
     uploadedBy: "Admin",
     date: new Date("2023-04-15").toISOString(),
