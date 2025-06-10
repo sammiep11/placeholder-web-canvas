@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -65,8 +66,12 @@ const Photos = () => {
             
             <Tabs defaultValue="throwbacks" onValueChange={handleTabChange} className="w-full">
               <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="throwbacks" className="text-xs sm:text-sm py-1">Throwbacks of Jonny</TabsTrigger>
-                <TabsTrigger value="inspiration" className="text-xs sm:text-sm py-1">Party Inspo</TabsTrigger>
+                <TabsTrigger value="throwbacks" className="text-xs sm:text-sm py-1">
+                  {isMobile ? "Throwbacks" : "Throwbacks of Jonny"}
+                </TabsTrigger>
+                <TabsTrigger value="inspiration" className="text-xs sm:text-sm py-1">
+                  {isMobile ? "Inspo" : "Party Inspo"}
+                </TabsTrigger>
                 <TabsTrigger value="party" className="text-xs sm:text-sm py-1">Party Night</TabsTrigger>
               </TabsList>
               
