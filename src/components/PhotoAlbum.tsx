@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { Album, Photo } from "@/pages/Photos";
 import { Download } from "lucide-react";
@@ -69,18 +68,16 @@ const PhotoAlbum = ({ album }: PhotoAlbumProps) => {
 
   return (
     <div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 auto-rows-auto">
         {photos.map((photo) => (
           <Card key={photo.id} className="overflow-hidden touch-manipulation">
             <div className="cursor-pointer" onClick={() => handlePhotoClick(photo)}>
-              <AspectRatio ratio={4/3}>
-                <img
-                  src={photo.src}
-                  alt={photo.caption || "Photo"}
-                  className="object-cover w-full h-full"
-                  loading="lazy"
-                />
-              </AspectRatio>
+              <img
+                src={photo.src}
+                alt={photo.caption || "Photo"}
+                className="w-full h-auto object-contain"
+                loading="lazy"
+              />
             </div>
             <div className="p-2 sm:p-3">
               {photo.caption && <p className="text-xs sm:text-sm mb-1">{photo.caption}</p>}
