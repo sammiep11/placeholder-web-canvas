@@ -10,6 +10,9 @@ const ProfileBlog = () => {
       </div>
       <div className="italic py-3">
         There are 3 rules for this party: 
+        1. You don't tell Jonny about this party
+        2. You don't tell Jonny about this party
+        3. You RSVP via the link above and get in the Y2K spirit
       </div>
     </div>
   );
