@@ -9,7 +9,7 @@ const ProfileBlog = () => {
         <div className="text-lg font-bold">You're invited to Jonny's ~*~SuPRiSe~*~ 40th Birthday</div>
       </div>
       <div className="italic py-3">
-        There are 3 rules for this party: </div>
+        There are 3 rules for this party: </br>
       </div>
     </div>
   );
