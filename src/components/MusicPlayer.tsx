@@ -36,6 +36,8 @@ const MusicPlayer = () => {
   const [duration, setDuration] = useState(0);
   const [playlist, setPlaylist] = useState(defaultPlaylist);
   const [showPlaylist, setShowPlaylist] = useState(false);
+  const [userInteracted, setUserInteracted] = useState(false);
+  const [showAutoplayHint, setShowAutoplayHint] = useState(true);
   const audioRef = useRef(null);
 
   const currentSong = playlist[currentSongIndex];
@@ -56,6 +58,55 @@ const MusicPlayer = () => {
       audio.volume = isMuted ? 0 : volume / 100;
     }
   }, [volume, isMuted]);
+
+  // Auto-play after first user interaction
+  useEffect(() => {
+    if (userInteracted) return;
+
+    const handleFirstInteraction = () => {
+      setUserInteracted(true);
+      setShowAutoplayHint(false);
+      
+      // Start music after a brief delay
+      setTimeout(() => {
+        const audio = audioRef.current;
+        if (audio && !isPlaying) {
+          const playPromise = audio.play();
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                setIsPlaying(true);
+                toast({
+                  title: "🎵 Music Started",
+                  description: "Welcome to the party! Music is now playing.",
+                  duration: 3000
+                });
+              })
+              .catch((error) => {
+                console.error("Auto-play failed:", error);
+                toast({
+                  title: "Click Play to Start Music",
+                  description: "Your browser prevented auto-play.",
+                  variant: "destructive"
+                });
+              });
+          }
+        }
+      }, 500);
+    };
+
+    // Listen for various user interactions
+    const events = ['click', 'touchstart', 'scroll', 'keydown'];
+    events.forEach(event => {
+      document.addEventListener(event, handleFirstInteraction, { once: true });
+    });
+
+    return () => {
+      events.forEach(event => {
+        document.removeEventListener(event, handleFirstInteraction);
+      });
+    };
+  }, [userInteracted, isPlaying]);
 
   const togglePlayPause = () => {
     const audio = audioRef.current;
@@ -111,6 +162,11 @@ const MusicPlayer = () => {
     <div className="spacehey-panel w-full">
       <div className="spacehey-panel-header">Now Playing</div>
       <div className="p-2">
+        {showAutoplayHint && (
+          <div className="text-xs text-center mb-2 p-2 bg-blue-100 border border-blue-300 rounded animate-pulse">
+            🎵 Music will start automatically once you interact with the page!
+          </div>
+        )}
 
         <div className="bg-[#EFEFEF] border border-gray-400">
           <div className="flex items-center justify-around my-2 bg-gray-700 text-white p-1 border border-black">
