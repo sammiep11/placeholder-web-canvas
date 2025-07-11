@@ -22,7 +22,7 @@ const Search = () => {
             <h2 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3">Sorry, you have no friends</h2>
             
             <p className="text-gray-600 text-sm sm:text-base mb-4 sm:mb-6">
-              Don't be so desperate to search for people on fake websites
+              Why are you searching for people on fake websites
             </p>
             
             <div className="spacehey-table w-full max-w-xs mb-4">
